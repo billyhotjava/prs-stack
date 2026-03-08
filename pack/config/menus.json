@@ -28,5 +28,35 @@
     "permission": "prs.executive.cockpit.view",
     "persona": "management",
     "roles": ["operations", "finance", "supervision"]
+  },
+  {
+    "id": "prs-backoffice-customers",
+    "label": "Customers",
+    "routePath": "/prs/backoffice/customers",
+    "componentPath": "src/pages/pc/customer/CustomerListPage.tsx",
+    "icon": "users",
+    "permission": "prs.executive.cockpit.view",
+    "persona": "backoffice",
+    "roles": ["operations", "department-supervisor"]
+  },
+  {
+    "id": "prs-backoffice-contracts",
+    "label": "Contracts",
+    "routePath": "/prs/backoffice/contracts",
+    "componentPath": "src/pages/pc/contract/ContractListPage.tsx",
+    "icon": "file-stack",
+    "permission": "prs.executive.cockpit.view",
+    "persona": "backoffice",
+    "roles": ["operations", "finance", "department-supervisor"]
+  },
+  {
+    "id": "prs-backoffice-projects",
+    "label": "Projects",
+    "routePath": "/prs/backoffice/projects",
+    "componentPath": "src/pages/pc/project/ProjectListPage.tsx",
+    "icon": "layout-grid",
+    "permission": "prs.executive.cockpit.view",
+    "persona": "backoffice",
+    "roles": ["operations", "finance", "department-supervisor"]
   }
 ]
