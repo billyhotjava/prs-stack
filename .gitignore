@@ -9,6 +9,8 @@ dist/
 .m2/
 .pnpm-store/
 coverage/
+__pycache__/
+*.pyc
 
 *.log
 *.tmp
