@@ -100,6 +100,26 @@
     "roles": ["operations", "department-supervisor"]
   },
   {
+    "id": "prs-backoffice-reconciliation",
+    "label": "Reconciliation",
+    "routePath": "/prs/backoffice/reconciliation",
+    "componentPath": "src/pages/finance/ReconciliationWorkbenchPage.tsx",
+    "icon": "scale",
+    "permission": "prs.executive.cockpit.view",
+    "persona": "backoffice",
+    "roles": ["finance", "operations"]
+  },
+  {
+    "id": "prs-backoffice-receivables",
+    "label": "Receivables",
+    "routePath": "/prs/backoffice/receivables",
+    "componentPath": "src/pages/finance/ReceivablesPage.tsx",
+    "icon": "wallet",
+    "permission": "prs.executive.cockpit.view",
+    "persona": "backoffice",
+    "roles": ["finance", "operations"]
+  },
+  {
     "id": "prs-backoffice-contracts",
     "label": "Contracts",
     "routePath": "/prs/backoffice/contracts",

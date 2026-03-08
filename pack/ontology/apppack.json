@@ -24,6 +24,11 @@
       "id": "PrsPlantChangeRequest",
       "label": "Plant Change Request",
       "description": "A field-drafted plant change request that requires supervisor approval before execution."
+    },
+    {
+      "id": "PrsFinanceFact",
+      "label": "Finance Fact",
+      "description": "A project-level business finance fact used for reconciliation and operating insight."
     }
   ],
   "linkTypes": [
@@ -41,6 +46,11 @@
       "id": "PROJECT_HAS_CHANGE_REQUEST",
       "from": "PrsProject",
       "to": "PrsPlantChangeRequest"
+    },
+    {
+      "id": "PROJECT_HAS_FINANCE_FACT",
+      "from": "PrsProject",
+      "to": "PrsFinanceFact"
     },
     {
       "id": "ASSET_HAS_MOVEMENT",
