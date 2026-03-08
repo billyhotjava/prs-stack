@@ -6,6 +6,27 @@
     "module": "./Workbench",
     "icon": "sprout",
     "permission": "prs.workbench.view",
-    "persona": "operations"
+    "persona": "operations",
+    "roles": ["operations", "procurement", "supervision", "maintenance"]
+  },
+  {
+    "id": "prs-customer-portal",
+    "label": "Customer Portal",
+    "routePath": "/prs/customer",
+    "module": "./CustomerPortalHome",
+    "icon": "leaf",
+    "permission": "prs.customer.portal.view",
+    "persona": "customer",
+    "roles": ["customer"]
+  },
+  {
+    "id": "prs-executive-cockpit",
+    "label": "Executive Cockpit",
+    "routePath": "/prs/executive",
+    "module": "./ExecutiveCockpit",
+    "icon": "radar",
+    "permission": "prs.executive.cockpit.view",
+    "persona": "management",
+    "roles": ["operations", "finance", "supervision"]
   }
 ]

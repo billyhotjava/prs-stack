@@ -32,7 +32,7 @@ const fs = require("node:fs");
 const manifestPath = process.argv[2];
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
-for (const key of ["id", "name", "version", "minPlatformVersion", "vendor", "description", "menus", "permissions"]) {
+ for (const key of ["id", "name", "version", "minPlatformVersion", "vendor", "description", "rpcBaseUrl", "menus", "permissions"]) {
   if (typeof manifest[key] !== "string" || manifest[key].trim() === "") {
     throw new Error(`Manifest field "${key}" must be a non-empty string`);
   }
@@ -54,6 +54,14 @@ if (!Array.isArray(manifest.frontend.exposedModules) || manifest.frontend.expose
   throw new Error('Manifest "frontend.exposedModules" must contain at least one module');
 }
 
+for (const moduleEntry of manifest.frontend.exposedModules) {
+  for (const key of ["name", "routePath", "menuLabel"]) {
+    if (typeof moduleEntry[key] !== "string" || moduleEntry[key].trim() === "") {
+      throw new Error(`Every exposed module must define "${key}"`);
+    }
+  }
+}
+
 if (!manifest.ontology || typeof manifest.ontology.objectTypes !== "string" || manifest.ontology.objectTypes.trim() === "") {
   throw new Error('Manifest "ontology.objectTypes" must be a non-empty string');
 }
@@ -64,11 +72,11 @@ for (const skill of manifest.skills) {
   }
 }
 
-console.log(`${manifest.id}\t${manifest.version}\t${manifest.minPlatformVersion}\t${manifest.ontology.objectTypes}\t${manifest.menus}\t${manifest.permissions}`);
+ console.log(`${manifest.id}\t${manifest.version}\t${manifest.minPlatformVersion}\t${manifest.rpcBaseUrl}\t${manifest.ontology.objectTypes}\t${manifest.menus}\t${manifest.permissions}`);
 NODE
 )"
 
-IFS=$'\t' read -r pack_id pack_version min_platform ontology_file menus_file permissions_file <<<"${manifest_summary}"
+IFS=$'\t' read -r pack_id pack_version min_platform rpc_base_url ontology_file menus_file permissions_file <<<"${manifest_summary}"
 
 if [[ "$(printf '%s\n%s\n' "${min_platform}" "${current_platform}" | sort -V | head -n 1)" != "${min_platform}" ]]; then
   printf 'Pack requires platform %s but current platform is %s\n' "${min_platform}" "${current_platform}" >&2
@@ -112,5 +120,6 @@ fi
 printf '✓ pack-manifest.json found\n'
 printf '✓ Schema baseline valid (pack-manifest-v1)\n'
 printf '✓ minPlatformVersion %s compatible with current %s\n' "${min_platform}" "${current_platform}"
+printf '✓ rpcBaseUrl %s declared\n' "${rpc_base_url}"
 printf '✓ Checksum verified\n'
 printf '✓ Pack "%s" v%s is valid\n' "${pack_id}" "${pack_version}"

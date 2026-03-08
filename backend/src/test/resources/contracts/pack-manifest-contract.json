@@ -1,0 +1,28 @@
+{
+  "packId": "prs-pack",
+  "rpcBaseUrl": "http://prs-backend:8080",
+  "skillEndpoint": "http://prs-backend:8080/api/skill/execute",
+  "remoteEntryUrl": "http://prs-frontend/assets/remoteEntry.js",
+  "exposedModules": [
+    {
+      "name": "./Workbench",
+      "routePath": "/prs/workbench"
+    },
+    {
+      "name": "./CustomerPortalHome",
+      "routePath": "/prs/customer"
+    },
+    {
+      "name": "./ExecutiveCockpit",
+      "routePath": "/prs/executive"
+    }
+  ],
+  "roles": [
+    "customer",
+    "finance",
+    "maintenance",
+    "operations",
+    "procurement",
+    "supervision"
+  ]
+}

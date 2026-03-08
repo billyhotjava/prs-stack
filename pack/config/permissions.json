@@ -11,23 +11,50 @@
     {
       "id": "prs.executive.cockpit.view",
       "label": "View executive cockpit"
+    },
+    {
+      "id": "prs.procurement.workspace.view",
+      "label": "View procurement workspace"
+    },
+    {
+      "id": "prs.supervision.workspace.view",
+      "label": "View supervision workspace"
+    },
+    {
+      "id": "prs.maintenance.workspace.view",
+      "label": "View maintenance workspace"
     }
   ],
   "roles": [
     {
       "id": "operations",
       "label": "Operations",
-      "permissions": ["prs.workbench.view"]
+      "permissions": ["prs.workbench.view", "prs.executive.cockpit.view"]
+    },
+    {
+      "id": "procurement",
+      "label": "Procurement",
+      "permissions": ["prs.workbench.view", "prs.procurement.workspace.view"]
+    },
+    {
+      "id": "finance",
+      "label": "Finance",
+      "permissions": ["prs.executive.cockpit.view"]
+    },
+    {
+      "id": "supervision",
+      "label": "Supervision",
+      "permissions": ["prs.workbench.view", "prs.executive.cockpit.view", "prs.supervision.workspace.view"]
+    },
+    {
+      "id": "maintenance",
+      "label": "Maintenance",
+      "permissions": ["prs.workbench.view", "prs.maintenance.workspace.view"]
     },
     {
       "id": "customer",
       "label": "Customer",
       "permissions": ["prs.customer.portal.view"]
-    },
-    {
-      "id": "executive",
-      "label": "Executive",
-      "permissions": ["prs.executive.cockpit.view"]
     }
   ]
 }

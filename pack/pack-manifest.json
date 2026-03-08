@@ -6,13 +6,24 @@
   "minPlatformVersion": "2.5.0",
   "vendor": "Yuzhi Tech",
   "description": "Independent plant-rental operations pack for DTS hosting.",
+  "rpcBaseUrl": "http://prs-backend:8080",
   "frontend": {
-    "remoteEntryUrl": "http://localhost:4173/assets/remoteEntry.js",
+    "remoteEntryUrl": "http://prs-frontend/assets/remoteEntry.js",
     "exposedModules": [
       {
         "name": "./Workbench",
         "routePath": "/prs/workbench",
         "menuLabel": "Field Workbench"
+      },
+      {
+        "name": "./CustomerPortalHome",
+        "routePath": "/prs/customer",
+        "menuLabel": "Customer Portal"
+      },
+      {
+        "name": "./ExecutiveCockpit",
+        "routePath": "/prs/executive",
+        "menuLabel": "Executive Cockpit"
       }
     ],
     "sharedDeps": ["react", "react-dom"]
@@ -21,7 +32,7 @@
     {
       "id": "prs-operations-routing",
       "toolType": "rpc",
-      "endpoint": "http://localhost:8080/api/skill/execute",
+      "endpoint": "http://prs-backend:8080/api/skill/execute",
       "timeoutSeconds": 30,
       "description": "Routes PRS skill requests to backend handlers."
     }

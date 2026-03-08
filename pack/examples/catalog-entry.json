@@ -1,0 +1,28 @@
+{
+  "packId": "prs-pack",
+  "version": "0.1.0",
+  "status": "ACTIVE",
+  "rpcBaseUrl": "http://prs-backend:8080",
+  "remoteEntryUrl": "http://prs-frontend/assets/remoteEntry.js",
+  "frontend": {
+    "remoteEntryUrl": "http://prs-frontend/assets/remoteEntry.js",
+    "exposedModules": [
+      {
+        "name": "./Workbench",
+        "routePath": "/prs/workbench",
+        "menuLabel": "Field Workbench"
+      },
+      {
+        "name": "./CustomerPortalHome",
+        "routePath": "/prs/customer",
+        "menuLabel": "Customer Portal"
+      },
+      {
+        "name": "./ExecutiveCockpit",
+        "routePath": "/prs/executive",
+        "menuLabel": "Executive Cockpit"
+      }
+    ],
+    "sharedDeps": ["react", "react-dom"]
+  }
+}
