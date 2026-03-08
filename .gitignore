@@ -6,6 +6,7 @@ backend/target/
 frontend/node_modules/
 frontend/dist/
 dist/
+.m2/
 .pnpm-store/
 coverage/
 
