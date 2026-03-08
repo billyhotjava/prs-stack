@@ -6,7 +6,7 @@ describe("remote exposes", () => {
     expect(remoteExports.exposes).toEqual({
       "./Workbench": "./src/pages/mobile/MobileWorkbenchPage.tsx",
       "./CustomerPortalHome": "./src/pages/customer/CustomerPortalHomePage.tsx",
-      "./ExecutiveCockpit": "./src/pages/executive/ExecutiveCockpitPage.tsx",
+      "./ExecutiveCockpit": "./src/pages/executive/OperatingCockpitPage.tsx",
     });
 
     expect(remoteExports.remoteModuleCatalog).toEqual([

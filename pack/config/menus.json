@@ -71,7 +71,7 @@
   },
   {
     "id": "prs-executive-cockpit",
-    "label": "Executive Cockpit",
+    "label": "Operating Cockpit",
     "routePath": "/prs/executive",
     "module": "./ExecutiveCockpit",
     "icon": "radar",

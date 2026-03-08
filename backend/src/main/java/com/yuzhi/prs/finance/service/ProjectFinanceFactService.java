@@ -23,4 +23,10 @@ public class ProjectFinanceFactService {
             .sorted(Comparator.comparing(ProjectFinanceFact::accountingPeriod).thenComparing(ProjectFinanceFact::factType))
             .toList();
     }
+
+    public List<ProjectFinanceFact> listAllFacts() {
+        return factsByKey.values().stream()
+            .sorted(Comparator.comparing(ProjectFinanceFact::projectId).thenComparing(ProjectFinanceFact::accountingPeriod))
+            .toList();
+    }
 }
