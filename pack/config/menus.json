@@ -20,6 +20,16 @@
     "roles": ["operations", "procurement", "supervision", "maintenance"]
   },
   {
+    "id": "prs-service-feed",
+    "label": "Service Feed",
+    "routePath": "/prs/service-feed",
+    "componentPath": "src/pages/mobile/MaintenanceRecordPage.tsx",
+    "icon": "droplets",
+    "permission": "prs.workbench.view",
+    "persona": "operations",
+    "roles": ["operations", "supervision", "maintenance"]
+  },
+  {
     "id": "prs-customer-portal",
     "label": "Customer Portal",
     "routePath": "/prs/customer",
