@@ -28,7 +28,7 @@
   "roles": [
     {
       "id": "operations",
-      "label": "Operations",
+      "label": "Customer Service / Operations",
       "permissions": ["prs.workbench.view", "prs.executive.cockpit.view"]
     },
     {
@@ -50,6 +50,17 @@
       "id": "maintenance",
       "label": "Maintenance",
       "permissions": ["prs.workbench.view", "prs.maintenance.workspace.view"]
+    },
+    {
+      "id": "department-supervisor",
+      "label": "Department Supervisor",
+      "permissions": [
+        "prs.workbench.view",
+        "prs.executive.cockpit.view",
+        "prs.procurement.workspace.view",
+        "prs.supervision.workspace.view",
+        "prs.maintenance.workspace.view"
+      ]
     },
     {
       "id": "customer",

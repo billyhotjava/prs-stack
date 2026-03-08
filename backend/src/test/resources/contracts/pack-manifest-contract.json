@@ -19,6 +19,7 @@
   ],
   "roles": [
     "customer",
+    "department-supervisor",
     "finance",
     "maintenance",
     "operations",
