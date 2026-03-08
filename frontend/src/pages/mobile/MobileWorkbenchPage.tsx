@@ -1,5 +1,5 @@
-import { PrsWorkbenchPage } from "../workbench/PrsWorkbenchPage";
+import { FieldWorkbenchPage } from "./FieldWorkbenchPage";
 
 export function MobileWorkbenchPage() {
-  return <PrsWorkbenchPage />;
+  return <FieldWorkbenchPage />;
 }
