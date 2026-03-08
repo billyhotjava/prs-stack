@@ -1,0 +1,14 @@
+.DS_Store
+.idea/
+.vscode/
+
+backend/target/
+frontend/node_modules/
+frontend/dist/
+dist/
+.pnpm-store/
+coverage/
+
+*.log
+*.tmp
+*.swp
