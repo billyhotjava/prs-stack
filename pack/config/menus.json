@@ -40,6 +40,26 @@
     "roles": ["customer"]
   },
   {
+    "id": "prs-customer-overview",
+    "label": "Project Overview",
+    "routePath": "/prs/customer/overview",
+    "componentPath": "src/pages/customer/CustomerOverviewPage.tsx",
+    "icon": "radar",
+    "permission": "prs.customer.portal.view",
+    "persona": "customer",
+    "roles": ["customer"]
+  },
+  {
+    "id": "prs-customer-history",
+    "label": "Service History",
+    "routePath": "/prs/customer/history",
+    "componentPath": "src/pages/customer/ServiceHistoryPage.tsx",
+    "icon": "history",
+    "permission": "prs.customer.portal.view",
+    "persona": "customer",
+    "roles": ["customer"]
+  },
+  {
     "id": "prs-executive-cockpit",
     "label": "Executive Cockpit",
     "routePath": "/prs/executive",
