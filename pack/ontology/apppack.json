@@ -19,6 +19,11 @@
       "id": "PrsServiceEvent",
       "label": "Service Event",
       "description": "An inspection, maintenance, complaint, or change event recorded on site."
+    },
+    {
+      "id": "PrsPlantChangeRequest",
+      "label": "Plant Change Request",
+      "description": "A field-drafted plant change request that requires supervisor approval before execution."
     }
   ],
   "linkTypes": [
@@ -31,6 +36,11 @@
       "id": "ASSET_HAS_EVENT",
       "from": "PrsPlantAsset",
       "to": "PrsServiceEvent"
+    },
+    {
+      "id": "PROJECT_HAS_CHANGE_REQUEST",
+      "from": "PrsProject",
+      "to": "PrsPlantChangeRequest"
     },
     {
       "id": "ASSET_HAS_MOVEMENT",
@@ -50,6 +60,10 @@
     {
       "id": "prs.asset.transition",
       "label": "Record Asset Transition"
+    },
+    {
+      "id": "prs.change.approve",
+      "label": "Approve Plant Change"
     }
   ]
 }
