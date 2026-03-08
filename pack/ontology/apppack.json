@@ -11,6 +11,11 @@
       "description": "A placed plant asset tracked through setup, service, and replacement."
     },
     {
+      "id": "PrsAssetMovement",
+      "label": "Asset Movement",
+      "description": "A status transition or movement event captured for an on-site plant asset."
+    },
+    {
       "id": "PrsServiceEvent",
       "label": "Service Event",
       "description": "An inspection, maintenance, complaint, or change event recorded on site."
@@ -26,6 +31,11 @@
       "id": "ASSET_HAS_EVENT",
       "from": "PrsPlantAsset",
       "to": "PrsServiceEvent"
+    },
+    {
+      "id": "ASSET_HAS_MOVEMENT",
+      "from": "PrsPlantAsset",
+      "to": "PrsAssetMovement"
     }
   ],
   "actionTypes": [
@@ -36,6 +46,10 @@
     {
       "id": "prs.record.service",
       "label": "Record Service Action"
+    },
+    {
+      "id": "prs.asset.transition",
+      "label": "Record Asset Transition"
     }
   ]
 }
