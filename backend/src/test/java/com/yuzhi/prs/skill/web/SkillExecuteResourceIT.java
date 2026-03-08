@@ -22,6 +22,8 @@ class SkillExecuteResourceIT {
     @Test
     void executesSkillRequestsThroughStableRpcContract() throws Exception {
         mockMvc.perform(post("/api/skill/execute")
+                .header("X-PRS-User-Id", "user-123")
+                .header("X-PRS-Roles", "operations,maintenance")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {

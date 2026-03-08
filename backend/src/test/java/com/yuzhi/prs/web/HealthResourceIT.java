@@ -4,14 +4,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.yuzhi.prs.PrsBackendApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(classes = HealthResourceIT.TestApplication.class)
+@SpringBootTest(classes = PrsBackendApplication.class)
 @AutoConfigureMockMvc
 class HealthResourceIT {
 
@@ -25,7 +25,4 @@ class HealthResourceIT {
             .andExpect(jsonPath("$.status").value("UP"))
             .andExpect(jsonPath("$.application").value("prs-backend"));
     }
-
-    @SpringBootApplication
-    static class TestApplication {}
 }
