@@ -1,0 +1,34 @@
+{
+  "$schema": "https://dts.yuzhi.com/schemas/pack-manifest-v1.json",
+  "id": "prs-pack",
+  "name": "Plants Rental Platform",
+  "version": "0.1.0",
+  "minPlatformVersion": "2.5.0",
+  "vendor": "Yuzhi Tech",
+  "description": "Independent plant-rental operations pack for DTS hosting.",
+  "frontend": {
+    "remoteEntryUrl": "http://localhost:4173/assets/remoteEntry.js",
+    "exposedModules": [
+      {
+        "name": "./Workbench",
+        "routePath": "/prs/workbench",
+        "menuLabel": "Field Workbench"
+      }
+    ],
+    "sharedDeps": ["react", "react-dom"]
+  },
+  "skills": [
+    {
+      "id": "prs-operations-routing",
+      "toolType": "rpc",
+      "endpoint": "http://localhost:8080/api/skill/execute",
+      "timeoutSeconds": 30,
+      "description": "Routes PRS skill requests to backend handlers."
+    }
+  ],
+  "ontology": {
+    "objectTypes": "ontology/apppack.json"
+  },
+  "menus": "config/menus.json",
+  "permissions": "config/permissions.json"
+}

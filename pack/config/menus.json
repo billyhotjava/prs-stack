@@ -1,0 +1,11 @@
+[
+  {
+    "id": "prs-field-workbench",
+    "label": "Field Workbench",
+    "routePath": "/prs/workbench",
+    "module": "./Workbench",
+    "icon": "sprout",
+    "permission": "prs.workbench.view",
+    "persona": "operations"
+  }
+]

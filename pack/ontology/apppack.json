@@ -1,0 +1,41 @@
+{
+  "objectTypes": [
+    {
+      "id": "PrsProject",
+      "label": "Project",
+      "description": "The operating and profit center for a customer deployment."
+    },
+    {
+      "id": "PrsPlantAsset",
+      "label": "Plant Asset",
+      "description": "A placed plant asset tracked through setup, service, and replacement."
+    },
+    {
+      "id": "PrsServiceEvent",
+      "label": "Service Event",
+      "description": "An inspection, maintenance, complaint, or change event recorded on site."
+    }
+  ],
+  "linkTypes": [
+    {
+      "id": "PROJECT_HAS_ASSET",
+      "from": "PrsProject",
+      "to": "PrsPlantAsset"
+    },
+    {
+      "id": "ASSET_HAS_EVENT",
+      "from": "PrsPlantAsset",
+      "to": "PrsServiceEvent"
+    }
+  ],
+  "actionTypes": [
+    {
+      "id": "prs.report.change",
+      "label": "Report Plant Change"
+    },
+    {
+      "id": "prs.record.service",
+      "label": "Record Service Action"
+    }
+  ]
+}

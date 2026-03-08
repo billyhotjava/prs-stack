@@ -1,0 +1,33 @@
+{
+  "permissions": [
+    {
+      "id": "prs.workbench.view",
+      "label": "View field workbench"
+    },
+    {
+      "id": "prs.customer.portal.view",
+      "label": "View customer portal"
+    },
+    {
+      "id": "prs.executive.cockpit.view",
+      "label": "View executive cockpit"
+    }
+  ],
+  "roles": [
+    {
+      "id": "operations",
+      "label": "Operations",
+      "permissions": ["prs.workbench.view"]
+    },
+    {
+      "id": "customer",
+      "label": "Customer",
+      "permissions": ["prs.customer.portal.view"]
+    },
+    {
+      "id": "executive",
+      "label": "Executive",
+      "permissions": ["prs.executive.cockpit.view"]
+    }
+  ]
+}
