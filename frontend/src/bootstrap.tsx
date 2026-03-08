@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { PrsWorkbenchPage } from "./pages/workbench/PrsWorkbenchPage";
+import { MobileWorkbenchPage } from "./pages/mobile/MobileWorkbenchPage";
 
 export function bootstrap() {
   const rootElement = document.getElementById("root");
@@ -10,7 +10,7 @@ export function bootstrap() {
 
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <PrsWorkbenchPage />
+      <MobileWorkbenchPage />
     </React.StrictMode>,
   );
 }
