@@ -1,0 +1,25 @@
+:root {
+  color-scheme: light;
+  --prs-bg: #eef4ea;
+  --prs-surface: rgba(255, 255, 255, 0.82);
+  --prs-surface-strong: #ffffff;
+  --prs-text: #112015;
+  --prs-text-muted: #526155;
+  --prs-line: rgba(17, 32, 21, 0.1);
+  --prs-primary: #1d7a43;
+  --prs-primary-strong: #12572f;
+  --prs-accent: #d8ef95;
+  --prs-shadow: 0 18px 60px rgba(17, 32, 21, 0.12);
+  --prs-radius-xl: 28px;
+  --prs-radius-lg: 22px;
+  --prs-radius-md: 16px;
+  --prs-space-1: 4px;
+  --prs-space-2: 8px;
+  --prs-space-3: 12px;
+  --prs-space-4: 16px;
+  --prs-space-5: 20px;
+  --prs-space-6: 24px;
+  --prs-space-8: 32px;
+  --prs-space-10: 40px;
+  --prs-font-sans: "Inter", "Segoe UI", sans-serif;
+}
