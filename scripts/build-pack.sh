@@ -4,8 +4,9 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 pack_dir="${repo_root}/pack"
-dist_dir="${repo_root}/dist/pack"
-stage_dir="${dist_dir}/package"
+dist_root="${repo_root}/dist"
+stage_dir="${dist_root}/pack"
+artifact_dir="${dist_root}/artifacts"
 
 if ! command -v zip >/dev/null 2>&1; then
   printf 'The "zip" command is required to build the PRS pack.\n' >&2
@@ -24,7 +25,8 @@ NODE
 IFS=$'\t' read -r pack_id pack_version <<<"${manifest_summary}"
 zip_name="${pack_id}-${pack_version}.zip"
 
-mkdir -p "${dist_dir}"
+mkdir -p "${dist_root}"
+mkdir -p "${artifact_dir}"
 rm -rf "${stage_dir}"
 mkdir -p "${stage_dir}"
 cp -R "${pack_dir}/." "${stage_dir}/"
@@ -37,11 +39,12 @@ cp -R "${pack_dir}/." "${stage_dir}/"
 )
 
 bash "${script_dir}/validate-pack.sh" "${stage_dir}"
-rm -f "${dist_dir}/${zip_name}"
+rm -f "${artifact_dir}/${zip_name}"
 
 (
   cd "${stage_dir}"
-  zip -qr "${dist_dir}/${zip_name}" .
+  zip -qr "${artifact_dir}/${zip_name}" .
 )
 
-printf 'Built %s\n' "${dist_dir}/${zip_name}"
+printf 'Staged pack in %s\n' "${stage_dir}"
+printf 'Built %s\n' "${artifact_dir}/${zip_name}"
