@@ -35,6 +35,27 @@
       "endpoint": "http://prs-backend:8080/api/skill/execute",
       "timeoutSeconds": 30,
       "description": "Routes PRS skill requests to backend handlers."
+    },
+    {
+      "id": "prs-plant-issue-draft",
+      "toolType": "rpc",
+      "endpoint": "http://prs-backend:8080/api/skill/execute",
+      "timeoutSeconds": 30,
+      "description": "Drafts plant issue summaries from field intake before supervisor approval."
+    },
+    {
+      "id": "prs-feedback-routing",
+      "toolType": "rpc",
+      "endpoint": "http://prs-backend:8080/api/skill/execute",
+      "timeoutSeconds": 30,
+      "description": "Explains how customer feedback will be routed through operations review."
+    },
+    {
+      "id": "prs-reconciliation-explain",
+      "toolType": "rpc",
+      "endpoint": "http://prs-backend:8080/api/skill/execute",
+      "timeoutSeconds": 30,
+      "description": "Explains reconciliation differences for finance review."
     }
   ],
   "ontology": {
