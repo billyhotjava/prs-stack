@@ -60,6 +60,16 @@
     "roles": ["customer"]
   },
   {
+    "id": "prs-customer-feedback",
+    "label": "Submit Feedback",
+    "routePath": "/prs/customer/feedback",
+    "componentPath": "src/pages/customer/SubmitFeedbackPage.tsx",
+    "icon": "message-square",
+    "permission": "prs.customer.portal.view",
+    "persona": "customer",
+    "roles": ["customer"]
+  },
+  {
     "id": "prs-executive-cockpit",
     "label": "Executive Cockpit",
     "routePath": "/prs/executive",
@@ -75,6 +85,16 @@
     "routePath": "/prs/backoffice/customers",
     "componentPath": "src/pages/pc/customer/CustomerListPage.tsx",
     "icon": "users",
+    "permission": "prs.executive.cockpit.view",
+    "persona": "backoffice",
+    "roles": ["operations", "department-supervisor"]
+  },
+  {
+    "id": "prs-backoffice-feedback",
+    "label": "Feedback Triage",
+    "routePath": "/prs/backoffice/feedback",
+    "componentPath": "src/pages/pc/ops/FeedbackTriagePage.tsx",
+    "icon": "inbox",
     "permission": "prs.executive.cockpit.view",
     "persona": "backoffice",
     "roles": ["operations", "department-supervisor"]
