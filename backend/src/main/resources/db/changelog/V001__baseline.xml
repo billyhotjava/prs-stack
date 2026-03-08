@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="prs-001-audit-event-table" author="codex">
+        <createTable tableName="prs_audit_event">
+            <column name="event_id" type="varchar(64)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="event_type" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actor_id" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="object_type" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="object_id" type="varchar(128)"/>
+            <column name="details_json" type="clob"/>
+            <column name="occurred_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="prs-002-role-seed-table" author="codex">
+        <createTable tableName="prs_role_seed">
+            <column name="role_id" type="varchar(64)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="role_label" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permissions_json" type="clob">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

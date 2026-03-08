@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="prs-003-seed-roles" author="codex">
+        <insert tableName="prs_role_seed">
+            <column name="role_id" value="operations"/>
+            <column name="role_label" value="Customer Service / Operations"/>
+            <column name="permissions_json" value="[&quot;prs.workbench.view&quot;,&quot;prs.executive.cockpit.view&quot;]"/>
+        </insert>
+        <insert tableName="prs_role_seed">
+            <column name="role_id" value="procurement"/>
+            <column name="role_label" value="Procurement"/>
+            <column name="permissions_json" value="[&quot;prs.workbench.view&quot;,&quot;prs.procurement.workspace.view&quot;]"/>
+        </insert>
+        <insert tableName="prs_role_seed">
+            <column name="role_id" value="finance"/>
+            <column name="role_label" value="Finance"/>
+            <column name="permissions_json" value="[&quot;prs.executive.cockpit.view&quot;]"/>
+        </insert>
+        <insert tableName="prs_role_seed">
+            <column name="role_id" value="supervision"/>
+            <column name="role_label" value="Supervision"/>
+            <column name="permissions_json" value="[&quot;prs.workbench.view&quot;,&quot;prs.executive.cockpit.view&quot;,&quot;prs.supervision.workspace.view&quot;]"/>
+        </insert>
+        <insert tableName="prs_role_seed">
+            <column name="role_id" value="maintenance"/>
+            <column name="role_label" value="Maintenance"/>
+            <column name="permissions_json" value="[&quot;prs.workbench.view&quot;,&quot;prs.maintenance.workspace.view&quot;]"/>
+        </insert>
+        <insert tableName="prs_role_seed">
+            <column name="role_id" value="department-supervisor"/>
+            <column name="role_label" value="Department Supervisor"/>
+            <column name="permissions_json" value="[&quot;prs.workbench.view&quot;,&quot;prs.executive.cockpit.view&quot;,&quot;prs.procurement.workspace.view&quot;,&quot;prs.supervision.workspace.view&quot;,&quot;prs.maintenance.workspace.view&quot;]"/>
+        </insert>
+        <insert tableName="prs_role_seed">
+            <column name="role_id" value="customer"/>
+            <column name="role_label" value="Customer"/>
+            <column name="permissions_json" value="[&quot;prs.customer.portal.view&quot;]"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -1,5 +1,6 @@
 package com.yuzhi.prs.finance.web;
 
+import com.yuzhi.prs.audit.AuditEventService;
 import com.yuzhi.prs.finance.domain.AdvanceFact;
 import com.yuzhi.prs.finance.domain.CollectionFact;
 import com.yuzhi.prs.finance.domain.InvoiceFact;
@@ -7,6 +8,7 @@ import com.yuzhi.prs.finance.domain.ReimbursementFact;
 import com.yuzhi.prs.finance.service.BusinessFinanceFactService;
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,15 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class FinanceFactResource {
 
     private final BusinessFinanceFactService businessFinanceFactService;
+    private final AuditEventService auditEventService;
 
-    public FinanceFactResource(BusinessFinanceFactService businessFinanceFactService) {
+    public FinanceFactResource(
+        BusinessFinanceFactService businessFinanceFactService,
+        AuditEventService auditEventService
+    ) {
         this.businessFinanceFactService = businessFinanceFactService;
+        this.auditEventService = auditEventService;
     }
 
     @PostMapping("/invoice")
     @ResponseStatus(HttpStatus.CREATED)
     public InvoiceFact recordInvoice(@RequestBody InvoiceFactRequest request) {
-        return businessFinanceFactService.recordInvoice(new InvoiceFact(
+        InvoiceFact fact = businessFinanceFactService.recordInvoice(new InvoiceFact(
             request.factId(),
             request.projectId(),
             YearMonth.parse(request.accountingPeriod()),
@@ -38,12 +45,18 @@ public class FinanceFactResource {
             request.invoiceNumber(),
             request.customerName()
         ));
+        auditEventService.recordCurrentUser("finance.invoice-recorded", "invoice-fact", fact.id(), Map.of(
+            "projectId", fact.projectId(),
+            "amount", fact.amount(),
+            "currency", fact.currency()
+        ));
+        return fact;
     }
 
     @PostMapping("/collection")
     @ResponseStatus(HttpStatus.CREATED)
     public CollectionFact recordCollection(@RequestBody CollectionFactRequest request) {
-        return businessFinanceFactService.recordCollection(new CollectionFact(
+        CollectionFact fact = businessFinanceFactService.recordCollection(new CollectionFact(
             request.factId(),
             request.projectId(),
             YearMonth.parse(request.accountingPeriod()),
@@ -52,12 +65,18 @@ public class FinanceFactResource {
             request.payerName(),
             request.referenceNumber()
         ));
+        auditEventService.recordCurrentUser("finance.collection-recorded", "collection-fact", fact.id(), Map.of(
+            "projectId", fact.projectId(),
+            "amount", fact.amount(),
+            "currency", fact.currency()
+        ));
+        return fact;
     }
 
     @PostMapping("/reimbursement")
     @ResponseStatus(HttpStatus.CREATED)
     public ReimbursementFact recordReimbursement(@RequestBody ReimbursementFactRequest request) {
-        return businessFinanceFactService.recordReimbursement(new ReimbursementFact(
+        ReimbursementFact fact = businessFinanceFactService.recordReimbursement(new ReimbursementFact(
             request.factId(),
             request.projectId(),
             YearMonth.parse(request.accountingPeriod()),
@@ -66,12 +85,18 @@ public class FinanceFactResource {
             request.payeeName(),
             request.expenseType()
         ));
+        auditEventService.recordCurrentUser("finance.reimbursement-recorded", "reimbursement-fact", fact.id(), Map.of(
+            "projectId", fact.projectId(),
+            "amount", fact.amount(),
+            "currency", fact.currency()
+        ));
+        return fact;
     }
 
     @PostMapping("/advance")
     @ResponseStatus(HttpStatus.CREATED)
     public AdvanceFact recordAdvance(@RequestBody AdvanceFactRequest request) {
-        return businessFinanceFactService.recordAdvance(new AdvanceFact(
+        AdvanceFact fact = businessFinanceFactService.recordAdvance(new AdvanceFact(
             request.factId(),
             request.projectId(),
             YearMonth.parse(request.accountingPeriod()),
@@ -80,6 +105,12 @@ public class FinanceFactResource {
             request.receiverName(),
             request.purpose()
         ));
+        auditEventService.recordCurrentUser("finance.advance-recorded", "advance-fact", fact.id(), Map.of(
+            "projectId", fact.projectId(),
+            "amount", fact.amount(),
+            "currency", fact.currency()
+        ));
+        return fact;
     }
 
     @GetMapping("/projects/{projectId}")

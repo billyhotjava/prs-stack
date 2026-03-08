@@ -22,4 +22,7 @@ bash "${repo_root}/scripts/validate-pack.sh" "${repo_root}/pack"
 printf 'Checking Docker Compose configuration...\n'
 docker compose -f "${repo_root}/deploy/docker-compose.yml" config >/dev/null
 
+printf 'Running PRS pack release rehearsal...\n'
+python3 -m unittest "${repo_root}/tests/e2e/test_prs_pack_smoke.py"
+
 printf 'PRS local smoke checks passed.\n'

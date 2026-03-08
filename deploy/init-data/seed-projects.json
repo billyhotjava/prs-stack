@@ -1,0 +1,32 @@
+{
+  "projects": [
+    {
+      "projectId": "PRJ-001",
+      "projectName": "IFC Lobby Plant Service",
+      "customerId": "CUS-001",
+      "customerName": "IFC Property",
+      "contractId": "CTR-001",
+      "city": "Shanghai",
+      "serviceMode": "rental-and-maintenance",
+      "roles": {
+        "operations": "ops-001",
+        "maintenanceLead": "maint-001",
+        "financeOwner": "fin-001"
+      }
+    },
+    {
+      "projectId": "PRJ-002",
+      "projectName": "West Tower Office Greens",
+      "customerId": "CUS-002",
+      "customerName": "West Tower Management",
+      "contractId": "CTR-002",
+      "city": "Suzhou",
+      "serviceMode": "rental-only",
+      "roles": {
+        "operations": "ops-002",
+        "maintenanceLead": "maint-003",
+        "financeOwner": "fin-001"
+      }
+    }
+  ]
+}

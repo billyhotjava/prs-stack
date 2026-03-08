@@ -1,5 +1,6 @@
 package com.yuzhi.prs.change.service;
 
+import com.yuzhi.prs.audit.AuditEventService;
 import com.yuzhi.prs.change.domain.ApprovalDecision;
 import com.yuzhi.prs.change.domain.PlantChangeRequest;
 import com.yuzhi.prs.finance.domain.FactSourceType;
@@ -7,6 +8,7 @@ import com.yuzhi.prs.finance.domain.ProjectFinanceFact;
 import com.yuzhi.prs.finance.service.ProjectFinanceFactService;
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +16,23 @@ import org.springframework.stereotype.Service;
 public class PlantChangeService {
 
     private final ProjectFinanceFactService projectFinanceFactService;
+    private final AuditEventService auditEventService;
 
     public PlantChangeService() {
-        this(new ProjectFinanceFactService());
+        this(new ProjectFinanceFactService(), new AuditEventService());
     }
 
     @Autowired
     public PlantChangeService(ProjectFinanceFactService projectFinanceFactService) {
+        this(projectFinanceFactService, new AuditEventService());
+    }
+
+    public PlantChangeService(
+        ProjectFinanceFactService projectFinanceFactService,
+        AuditEventService auditEventService
+    ) {
         this.projectFinanceFactService = projectFinanceFactService;
+        this.auditEventService = auditEventService;
     }
 
     public PlantChangeRequest createDraft(
@@ -89,6 +100,16 @@ public class PlantChangeService {
                 "operations"
             ));
         }
+        auditEventService.recordCurrentUser(
+            "plant-change.decision",
+            "plant-change",
+            request.id(),
+            Map.of(
+                "status", status,
+                "decision", approvalDecision.decision(),
+                "projectId", request.projectId()
+            )
+        );
         return decided;
     }
 
