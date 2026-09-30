@@ -1,0 +1,39 @@
+{
+  "name": "创建坏账处理单",
+  "domain": "flowerbiz",
+  "object": "租赁报花明细",
+  "intent": "基于坏账风险命中的报花明细生成坏账处理单草稿，正式提交仍由 adminweb 人工确认。",
+  "riskLevel": "high",
+  "target": {
+    "serviceRef": "prs-legacy-adminapi",
+    "draft": {
+      "method": "POST",
+      "path": "/rs-flowers-base/flower/bizBadDebt/saveDraftFlowerBadDebt"
+    },
+    "commit": {
+      "method": "POST",
+      "path": "/rs-flowers-base/flower/bizBadDebt/saveFlowerBadDebt"
+    }
+  },
+  "params": [
+    {
+      "name": "projectId",
+      "source": "租赁报花明细.项目id",
+      "required": true
+    },
+    {
+      "name": "draftItemJson",
+      "source": "租赁报花明细.明细id",
+      "required": true
+    },
+    {
+      "name": "badDebtType",
+      "source": "租赁报花明细.业务类型",
+      "required": true
+    }
+  ],
+  "approval": {
+    "mode": "HITL",
+    "requiredRole": "flowerbiz:baddebt:draft"
+  }
+}

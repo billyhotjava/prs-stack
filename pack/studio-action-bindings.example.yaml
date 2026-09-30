@@ -1,0 +1,10 @@
+# Deployment overlay for Studio. This file is deliberately outside the data-only archive.
+# Supply the actual business gateway and credential through the deployment secret mechanism.
+dts:
+  studio:
+    action:
+      services:
+        prs-legacy-adminapi:
+          base-url: ${PRS_ACTION_BASE_URL:}
+          auth-mode: bearer
+          credential: ${PRS_ACTION_TOKEN:}

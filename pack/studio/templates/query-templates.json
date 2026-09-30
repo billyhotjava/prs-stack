@@ -1,0 +1,1500 @@
+{
+  "templates": [
+    {
+      "id": "TPL-01",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目|XX).*(绿植|花).*(多少|几|数量|总数)"
+      ],
+      "question_samples": [
+        "XX项目目前有多少在摆绿植？",
+        "XX项目的绿植数量",
+        "查一下XX项目有几盆花"
+      ],
+      "sql": "SELECT project_name, count(*) as 在摆绿植数, sum(good_number) as 绿植总量 FROM v_project_green_current WHERE project_name LIKE CONCAT('%', :project_name, '%') GROUP BY project_name",
+      "params": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "target_view": "v_project_green_current",
+      "description": "项目在摆绿植数",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-02",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(在服|正常|当前|活跃).*(项目).*(多少|几|总数|数量)"
+      ],
+      "question_samples": [
+        "当前在服项目一共多少个？",
+        "有多少正常运营的项目？",
+        "活跃项目数"
+      ],
+      "sql": "SELECT project_status_name, count(*) as 项目数 FROM v_project_overview WHERE project_status_name = '正常' GROUP BY project_status_name",
+      "params": {},
+      "target_view": "v_project_overview",
+      "description": "在服项目总数",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-03",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(合同).*(到期|快到期|即将到期|过期)"
+      ],
+      "question_samples": [
+        "哪些合同快到期了？",
+        "90天内到期的合同",
+        "即将到期的合同有哪些？"
+      ],
+      "sql": "SELECT project_name, customer_name, contract_title, contract_end_date, DATEDIFF(contract_end_date, CURDATE()) as 剩余天数 FROM v_project_overview WHERE contract_status_name = '执行中' AND contract_end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL :days DAY) ORDER BY contract_end_date ASC",
+      "params": {
+        "days": {
+          "type": "integer",
+          "default": 90
+        }
+      },
+      "target_view": "v_project_overview",
+      "description": "合同即将到期",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-04",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(客户|XX).*(有|下面|名下).*(几个|多少|哪些).*(项目)"
+      ],
+      "question_samples": [
+        "XX客户下面有几个项目？",
+        "XX客户名下的项目有哪些？"
+      ],
+      "sql": "SELECT customer_name, project_name, project_status_name, green_count, total_rent FROM v_project_overview WHERE customer_name LIKE CONCAT('%', :customer_name, '%') ORDER BY project_name",
+      "params": {
+        "customer_name": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "target_view": "v_project_overview",
+      "description": "客户项目查询",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-05",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目|XX).*(换花|加花|减花|报花).*(多少|几|次数|次)"
+      ],
+      "question_samples": [
+        "XX项目这个月换花了多少次？",
+        "本月XX项目的加花次数"
+      ],
+      "sql": "SELECT project_name, biz_type_name, count(*) as 次数, sum(plant_number) as 总数量 FROM v_flower_biz_detail WHERE project_name LIKE CONCAT('%', :project_name, '%') AND biz_month = :month GROUP BY project_name, biz_type_name ORDER BY 次数 DESC",
+      "params": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        },
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        }
+      },
+      "target_view": "v_flower_biz_detail",
+      "description": "项目报花次数统计",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-06",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目|各项目).*(加花|换花|报花).*(排行|排名|最多)"
+      ],
+      "question_samples": [
+        "各项目加花次数排行",
+        "本月哪个项目加花最多？",
+        "报花排行榜"
+      ],
+      "sql": "SELECT project_name, count(*) as 次数, sum(plant_number) as 总数量 FROM v_flower_biz_detail WHERE biz_type_name = :biz_type AND biz_month = :month GROUP BY project_name ORDER BY 次数 DESC LIMIT :top_n",
+      "params": {
+        "biz_type": {
+          "type": "string",
+          "default": "加花"
+        },
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "target_view": "v_flower_biz_detail",
+      "description": "各项目加花排行",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-07",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(本月|这个月|上月).*(报花|业务).*(加花|换花|减花).*(各|分别|分布|各多少)"
+      ],
+      "question_samples": [
+        "本月报花业务中，加花/换花/减花各多少？",
+        "这个月各类型报花数量"
+      ],
+      "sql": "SELECT biz_type_name, count(*) as 业务单数, sum(plant_number) as 总数量 FROM v_flower_biz_detail WHERE biz_month = :month AND biz_status_name NOT IN ('作废', '驳回', '草稿') GROUP BY biz_type_name ORDER BY 业务单数 DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        }
+      },
+      "target_view": "v_flower_biz_detail",
+      "description": "报花业务类型分布",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-08",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(待审批|审核中|未审批).*(报花|业务单)"
+      ],
+      "question_samples": [
+        "有多少待审批的报花单？",
+        "审核中的业务单有哪些？"
+      ],
+      "sql": "SELECT biz_code, biz_type_name, project_name, apply_user_name, apply_time FROM v_flower_biz_detail WHERE biz_status_name = '审核中' ORDER BY apply_time DESC",
+      "params": {},
+      "target_view": "v_flower_biz_detail",
+      "description": "待审批报花单",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-09",
+      "domain": "settlement",
+      "role_hint": "finance",
+      "question_patterns": [
+        "(项目|XX).*(上月|上个月|本月|这个月).*(租金|应收|收入)"
+      ],
+      "question_samples": [
+        "XX项目上个月租金是多少？",
+        "本月各项目租金"
+      ],
+      "sql": "SELECT project_name, customer_name, settlement_month, total_rent as 应收租金, received_amount as 已收, outstanding_amount as 未收 FROM v_monthly_settlement WHERE (:project_name IS NULL OR project_name LIKE CONCAT('%', :project_name, '%')) AND settlement_month = :month",
+      "params": {
+        "project_name": {
+          "type": "string"
+        },
+        "month": {
+          "type": "string",
+          "default": "LAST_MONTH"
+        }
+      },
+      "target_view": "v_monthly_settlement",
+      "description": "项目月租金查询",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-10",
+      "domain": "settlement",
+      "role_hint": "finance",
+      "question_patterns": [
+        "(未结算|待结算|没结算).*(项目)"
+      ],
+      "question_samples": [
+        "上月未结算的项目有哪些？",
+        "还有哪些项目没结算？"
+      ],
+      "sql": "SELECT project_name, customer_name, settlement_month, total_rent, settlement_status_name FROM v_monthly_settlement WHERE settlement_status_name = '待结算' AND settlement_month = :month ORDER BY total_rent DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "LAST_MONTH"
+        }
+      },
+      "target_view": "v_monthly_settlement",
+      "description": "未结算项目",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-11",
+      "domain": "settlement",
+      "role_hint": "finance",
+      "question_patterns": [
+        "(客户|XX).*(欠款|未收|应收未收|欠|拖欠)"
+      ],
+      "question_samples": [
+        "XX客户累计欠款多少？",
+        "哪些客户还有欠款？"
+      ],
+      "sql": "SELECT customer_name, sum(outstanding_amount) as 累计欠款, count(DISTINCT project_name) as 涉及项目数 FROM v_monthly_settlement WHERE outstanding_amount > 0 AND (:customer_name IS NULL OR customer_name LIKE CONCAT('%', :customer_name, '%')) GROUP BY customer_name ORDER BY 累计欠款 DESC",
+      "params": {
+        "customer_name": {
+          "type": "string"
+        }
+      },
+      "target_view": "v_monthly_settlement",
+      "description": "客户欠款查询",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-12",
+      "domain": "settlement",
+      "role_hint": "finance",
+      "question_patterns": [
+        "(项目).*(租金|收入).*(排名|排行)"
+      ],
+      "question_samples": [
+        "上季度各项目租金收入排名",
+        "项目租金排行"
+      ],
+      "sql": "SELECT project_name, customer_name, sum(total_rent) as 累计租金 FROM v_monthly_settlement WHERE settlement_month BETWEEN :start_month AND :end_month GROUP BY project_name, customer_name ORDER BY 累计租金 DESC LIMIT :top_n",
+      "params": {
+        "start_month": {
+          "type": "string",
+          "required": true
+        },
+        "end_month": {
+          "type": "string",
+          "required": true
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "target_view": "v_monthly_settlement",
+      "description": "项目租金排名",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-13",
+      "domain": "task",
+      "role_hint": null,
+      "question_patterns": [
+        "(待处理|待办|进行中|未完成).*(任务)"
+      ],
+      "question_samples": [
+        "今天有多少待处理的任务？",
+        "进行中的任务有哪些？"
+      ],
+      "sql": "SELECT task_code, task_title, task_type_name, project_name, leading_user_name, launch_time, completion_rate FROM v_task_progress WHERE task_status_name = '进行中' ORDER BY launch_time DESC",
+      "params": {},
+      "target_view": "v_task_progress",
+      "description": "待处理任务",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-14",
+      "domain": "pendulum",
+      "role_hint": null,
+      "question_patterns": [
+        "(初摆).*(任务|进度|进行中|待完成)"
+      ],
+      "question_samples": [
+        "进行中的初摆任务有几个？",
+        "初摆进度怎么样？"
+      ],
+      "sql": "SELECT pendulum_code, pendulum_title, pendulum_status_name, project_name, applicant_name, applicant_date, total_budget_cost, actual_cost FROM v_pendulum_progress WHERE pendulum_status_name IN ('初摆中', '待审批') ORDER BY applicant_date DESC",
+      "params": {},
+      "target_view": "v_pendulum_progress",
+      "description": "初摆任务进度",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-15",
+      "domain": "curing",
+      "role_hint": null,
+      "question_patterns": [
+        "(养护人|XX).*(负责|管理).*(摆位|多少)"
+      ],
+      "question_samples": [
+        "XX养护人负责哪些摆位？",
+        "养护人均负责多少摆位？"
+      ],
+      "sql": "SELECT curing_user_name, sum(total_position_count) as 负责摆位总数 FROM v_curing_coverage WHERE curing_month = :month AND (:curing_user IS NULL OR curing_user_name LIKE CONCAT('%', :curing_user, '%')) GROUP BY curing_user_name ORDER BY 负责摆位总数 DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        },
+        "curing_user": {
+          "type": "string"
+        }
+      },
+      "target_view": "v_curing_coverage",
+      "description": "养护人负责摆位",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-16",
+      "domain": "curing",
+      "role_hint": null,
+      "question_patterns": [
+        "(没养护|未养护|还没养护).*(摆位)"
+      ],
+      "question_samples": [
+        "本月哪些摆位还没做过养护？",
+        "未养护的摆位有多少？"
+      ],
+      "sql": "SELECT project_name, curing_user_name, total_position_count, covered_position_count, (total_position_count - covered_position_count) as 未养护摆位数, coverage_rate FROM v_curing_coverage WHERE curing_month = :month AND coverage_rate < 1.0 ORDER BY 未养护摆位数 DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        }
+      },
+      "target_view": "v_curing_coverage",
+      "description": "未养护摆位",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-17",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(换花率|换花.*(比例|率)|换花最多)"
+      ],
+      "question_samples": [
+        "哪个项目换花率最高？",
+        "各项目换花比例排行"
+      ],
+      "sql": "SELECT po.project_name, IFNULL(fb.换花次数, 0) as 换花次数, po.green_count as 在摆绿植数, CASE WHEN po.green_count > 0 THEN ROUND(IFNULL(fb.换花次数, 0) / po.green_count, 2) ELSE 0 END as 换花率 FROM v_project_overview po LEFT JOIN (SELECT project_name, count(*) as 换花次数 FROM v_flower_biz_detail WHERE biz_type_name = '换花' AND biz_month = :month GROUP BY project_name) fb ON po.project_name = fb.project_name WHERE po.project_status_name = '正常' ORDER BY 换花率 DESC LIMIT :top_n",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "target_view": "v_project_overview",
+      "description": "项目换花率排行",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-18",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(绿植).*(变化|变动|增减).*(最大|最多)"
+      ],
+      "question_samples": [
+        "哪些项目的绿植数量变化最大？",
+        "本月绿植增减变动排行"
+      ],
+      "sql": "SELECT project_name, sum(CASE WHEN biz_type_name = '加花' THEN plant_number ELSE 0 END) as 加花数, sum(CASE WHEN biz_type_name = '减花' THEN plant_number ELSE 0 END) as 减花数, (sum(CASE WHEN biz_type_name = '加花' THEN plant_number ELSE 0 END) - sum(CASE WHEN biz_type_name = '减花' THEN plant_number ELSE 0 END)) as 净变化 FROM v_flower_biz_detail WHERE biz_month = :month AND biz_type_name IN ('加花', '减花') AND biz_status_name NOT IN ('作废', '驳回', '草稿') GROUP BY project_name ORDER BY abs(净变化) DESC LIMIT :top_n",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "target_view": "v_flower_biz_detail",
+      "description": "绿植数量变化最大的项目",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-19",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(减花|回收).*(情况|统计|数量)"
+      ],
+      "question_samples": [
+        "XX项目的减花回收情况怎么样？",
+        "本月减花统计"
+      ],
+      "sql": "SELECT project_name, count(*) as 减花单数, sum(plant_number) as 减花总量, sum(biz_total_cost) as 涉及成本 FROM v_flower_biz_detail WHERE biz_type_name = '减花' AND biz_month = :month AND (:project_name IS NULL OR project_name LIKE CONCAT('%', :project_name, '%')) GROUP BY project_name ORDER BY 减花总量 DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        },
+        "project_name": {
+          "type": "string"
+        }
+      },
+      "target_view": "v_flower_biz_detail",
+      "description": "减花回收情况",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-20",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(结算方式|固定月租).*(哪些|分布|项目)"
+      ],
+      "question_samples": [
+        "哪些项目的结算方式是固定月租？",
+        "各结算方式的项目分布"
+      ],
+      "sql": "SELECT settlement_type_name, count(*) as 项目数, sum(total_rent) as 月租金合计 FROM v_project_overview WHERE project_status_name = '正常' GROUP BY settlement_type_name",
+      "params": {},
+      "target_view": "v_project_overview",
+      "description": "结算方式分布",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-21",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目).*(绿植|花).*(趋势|变化|走势|月度)"
+      ],
+      "question_samples": [
+        "XX项目最近3个月绿植数量趋势"
+      ],
+      "sql": "SELECT snapshot_date, project_name, green_count FROM mart_project_fulfillment_daily WHERE project_name LIKE CONCAT('%', :project_name, '%') AND snapshot_date >= CURRENT_DATE - INTERVAL ':months months' ORDER BY snapshot_date",
+      "params": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        },
+        "months": {
+          "type": "integer",
+          "default": 3
+        }
+      },
+      "target_view": "mart_project_fulfillment_daily",
+      "description": "项目绿植数月度趋势",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-22",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目|各项目).*(加花|报花).*(月度|对比|每月|各月)"
+      ],
+      "question_samples": [
+        "各项目最近3个月加花次数对比"
+      ],
+      "sql": "SELECT project_name, event_month, count(*) as 加花次数, sum(plant_number) as 加花总量 FROM fact_field_operation_event WHERE biz_type_name = '加花' AND event_date >= CURRENT_DATE - INTERVAL ':months months' GROUP BY project_name, event_month ORDER BY project_name, event_month",
+      "params": {
+        "months": {
+          "type": "integer",
+          "default": 3
+        }
+      },
+      "target_view": "fact_field_operation_event",
+      "description": "各项目加花次数月度对比",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-23",
+      "domain": "settlement",
+      "role_hint": null,
+      "question_patterns": [
+        "(应收|租金).*(环比|月度对比|对比)"
+      ],
+      "question_samples": [
+        "各项目上月和本月应收对比"
+      ],
+      "sql": "SELECT project_name, settlement_month, monthly_receivable FROM mart_project_fulfillment_daily WHERE settlement_month IS NOT NULL GROUP BY project_name, settlement_month, monthly_receivable ORDER BY project_name, settlement_month DESC",
+      "params": {},
+      "target_view": "mart_project_fulfillment_daily",
+      "description": "月度应收环比",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-24",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目).*(经营|综合).*(排名|排行)"
+      ],
+      "question_samples": [
+        "本月项目经营综合排名"
+      ],
+      "sql": "SELECT project_name, AVG(green_count) as 平均绿植数, SUM(change_flower_count) as 换花总次数, SUM(curing_count) as 养护总次数, SUM(add_flower_count) as 加花总次数 FROM mart_project_fulfillment_daily WHERE snapshot_date >= DATE_TRUNC('month', CURRENT_DATE) GROUP BY project_name ORDER BY 平均绿植数 DESC",
+      "params": {},
+      "target_view": "mart_project_fulfillment_daily",
+      "description": "项目经营综合排名",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-25",
+      "domain": "curing",
+      "role_hint": null,
+      "question_patterns": [
+        "(养护).*(覆盖率|覆盖).*(趋势|变化|月度)"
+      ],
+      "question_samples": [
+        "各项目养护覆盖率月度变化"
+      ],
+      "sql": "SELECT project_name, snapshot_date, curing_count, curing_positions FROM mart_project_fulfillment_daily WHERE snapshot_date >= CURRENT_DATE - INTERVAL ':months months' ORDER BY project_name, snapshot_date",
+      "params": {
+        "months": {
+          "type": "integer",
+          "default": 3
+        }
+      },
+      "target_view": "mart_project_fulfillment_daily",
+      "description": "养护覆盖率月度趋势",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-26",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(加花).*(趋势|月度|变化|走势|近.*月)"
+      ],
+      "question_samples": [
+        "最近半年各月加花次数趋势"
+      ],
+      "sql": "SELECT event_month, count(*) as 加花次数, sum(plant_number) as 加花总量 FROM fact_field_operation_event WHERE biz_type_name = '加花' AND event_date >= CURRENT_DATE - INTERVAL ':months months' GROUP BY event_month ORDER BY event_month",
+      "params": {
+        "months": {
+          "type": "integer",
+          "default": 6
+        }
+      },
+      "target_view": "fact_field_operation_event",
+      "description": "加花月度趋势",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-27",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(各类|各类型|业务类型).*(月度|趋势|分布|变化)"
+      ],
+      "question_samples": [
+        "最近3个月各类型报花业务趋势"
+      ],
+      "sql": "SELECT event_month, biz_type_name, count(*) as 单数 FROM fact_field_operation_event WHERE event_date >= CURRENT_DATE - INTERVAL ':months months' AND biz_status_name NOT IN ('作废','驳回','草稿') GROUP BY event_month, biz_type_name ORDER BY event_month, 单数 DESC",
+      "params": {
+        "months": {
+          "type": "integer",
+          "default": 3
+        }
+      },
+      "target_view": "fact_field_operation_event",
+      "description": "各类型业务月度分布趋势",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-28",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(紧急).*(占比|比例|趋势|变化)"
+      ],
+      "question_samples": [
+        "各月紧急报花单占比变化"
+      ],
+      "sql": "SELECT event_month, count(*) as 总单数, SUM(CASE WHEN is_urgent='是' THEN 1 ELSE 0 END) as 紧急单数, ROUND(SUM(CASE WHEN is_urgent='是' THEN 1 ELSE 0 END)::numeric / NULLIF(count(*),0), 2) as 紧急占比 FROM fact_field_operation_event WHERE event_date >= CURRENT_DATE - INTERVAL ':months months' GROUP BY event_month ORDER BY event_month",
+      "params": {
+        "months": {
+          "type": "integer",
+          "default": 6
+        }
+      },
+      "target_view": "fact_field_operation_event",
+      "description": "紧急业务占比趋势",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-29",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目|XX).*(报花|花卉).*(成本|费用).*(趋势|月度|变化)"
+      ],
+      "question_samples": [
+        "XX项目最近半年报花成本趋势"
+      ],
+      "sql": "SELECT event_month, project_name, sum(total_cost) as 月度成本, count(*) as 单数 FROM fact_field_operation_event WHERE (:project_name IS NULL OR project_name LIKE CONCAT('%', :project_name, '%')) AND event_date >= CURRENT_DATE - INTERVAL ':months months' GROUP BY event_month, project_name ORDER BY project_name, event_month",
+      "params": {
+        "project_name": {
+          "type": "string"
+        },
+        "months": {
+          "type": "integer",
+          "default": 6
+        }
+      },
+      "target_view": "fact_field_operation_event",
+      "description": "项目报花成本月度趋势",
+      "priority": 10,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-30",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        "(绿植).*(日|每天|日趋势|日变化)"
+      ],
+      "question_samples": [
+        "XX项目绿植数量每天变化"
+      ],
+      "sql": "SELECT snapshot_date, green_count, add_flower_count, cut_flower_count, change_flower_count FROM mart_project_fulfillment_daily WHERE project_name LIKE CONCAT('%', :project_name, '%') AND snapshot_date >= CURRENT_DATE - INTERVAL ':days days' ORDER BY snapshot_date",
+      "params": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        },
+        "days": {
+          "type": "integer",
+          "default": 30
+        }
+      },
+      "target_view": "mart_project_fulfillment_daily",
+      "description": "项目绿植变化日趋势",
+      "priority": 10,
+      "is_active": false,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-31",
+      "domain": "procurement",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(采购明细|采购详细情况).*(产品|物品|商品|采购).*",
+        ".*(\\\\d{4}年\\\\d{1,2}月|\\\\d{4}-\\\\d{2}).*(采购明细|采购详细情况).*"
+      ],
+      "question_samples": [
+        "查询2025年2月绿萝采购明细",
+        "2025年2月绿萝这个产品的采购详细情况"
+      ],
+      "sql": "SELECT b.purchase_user_name, a.purchase_time, a.good_name, a.good_specs, c.real_purchase_number AS parchase_number, a.parchase_price, ROUND(c.real_purchase_number * a.parchase_price, 2) AS total_amount, a.supply_name, f.code AS biz_code, f.project_name FROM t_purchase_price_item a LEFT JOIN t_purchase_info b ON a.purchase_info_id = b.id LEFT JOIN t_plan_purchase_item c ON c.purchase_price_id = a.id LEFT JOIN t_flower_biz_item d ON d.id = c.flower_item_id LEFT JOIN t_flower_biz_info f ON f.id = d.flower_biz_id WHERE d.status <> -1 AND d.id IS NOT NULL AND c.status <> -1 AND a.good_name = :good_name AND a.purchase_time >= CONCAT(:month, '-01') AND a.purchase_time < DATE_ADD(CONCAT(:month, '-01'), INTERVAL 1 MONTH) ORDER BY a.purchase_time DESC, b.purchase_user_name ASC",
+      "params": {
+        "month": {
+          "type": "string",
+          "required": true
+        },
+        "good_name": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "target_view": "authority.procurement.purchase_item_detail",
+      "description": "某月某产品采购明细",
+      "priority": 20,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-32",
+      "domain": "procurement",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(按采购人|采购人).*(采购金额|金额|总价|统计).*",
+        ".*(采购金额|金额).*(采购人).*统计.*"
+      ],
+      "question_samples": [
+        "查询2025年2月绿萝按采购人统计采购金额",
+        "绿萝采购金额按采购人统计"
+      ],
+      "sql": "SELECT b.purchase_user_name, COUNT(*) AS row_count, SUM(c.real_purchase_number) AS total_quantity, ROUND(SUM(c.real_purchase_number * a.parchase_price), 2) AS purchase_amount FROM t_purchase_price_item a LEFT JOIN t_purchase_info b ON a.purchase_info_id = b.id LEFT JOIN t_plan_purchase_item c ON c.purchase_price_id = a.id LEFT JOIN t_flower_biz_item d ON d.id = c.flower_item_id LEFT JOIN t_flower_biz_info f ON f.id = d.flower_biz_id WHERE d.status <> -1 AND d.id IS NOT NULL AND c.status <> -1 AND a.good_name = :good_name AND a.purchase_time >= CONCAT(:month, '-01') AND a.purchase_time < DATE_ADD(CONCAT(:month, '-01'), INTERVAL 1 MONTH) GROUP BY b.purchase_user_name ORDER BY purchase_amount DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "required": true
+        },
+        "good_name": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "target_view": "authority.procurement.purchase_amount_by_buyer",
+      "description": "某月某产品按采购人统计采购金额",
+      "priority": 25,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-33",
+      "domain": "procurement",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(采购详细情况|采购明细).*(按采购人).*(采购金额|金额).*",
+        ".*(\\\\d{4}年\\\\d{1,2}月|\\\\d{4}-\\\\d{2}).*(产品|物品|商品).*(采购详细情况|采购明细).*(采购人).*(金额).*"
+      ],
+      "question_samples": [
+        "查询2025年2月，绿萝这个产品的采购详细情况，按采购人、采购金额统计"
+      ],
+      "sql": "SELECT b.purchase_user_name, COUNT(*) AS row_count, SUM(c.real_purchase_number) AS total_quantity, ROUND(SUM(c.real_purchase_number * a.parchase_price), 2) AS purchase_amount FROM t_purchase_price_item a LEFT JOIN t_purchase_info b ON a.purchase_info_id = b.id LEFT JOIN t_plan_purchase_item c ON c.purchase_price_id = a.id LEFT JOIN t_flower_biz_item d ON d.id = c.flower_item_id LEFT JOIN t_flower_biz_info f ON f.id = d.flower_biz_id WHERE d.status <> -1 AND d.id IS NOT NULL AND c.status <> -1 AND a.good_name = :good_name AND a.purchase_time >= CONCAT(:month, '-01') AND a.purchase_time < DATE_ADD(CONCAT(:month, '-01'), INTERVAL 1 MONTH) GROUP BY b.purchase_user_name ORDER BY purchase_amount DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "required": true
+        },
+        "good_name": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "target_view": "authority.procurement.purchase_amount_by_buyer",
+      "description": "某月某产品采购详细情况按采购人金额统计",
+      "priority": 30,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-34",
+      "domain": "procurement",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(\\d{4}年).*(各个|各|所有).*(绿植|产品|物品|商品).*(采购情况|采购统计|采购).*",
+        ".*(各个|各|所有).*(绿植|产品|物品|商品).*(采购情况|采购统计|采购).*"
+      ],
+      "question_samples": [
+        "看下2026年各个绿植的采购情况",
+        "统计2026年各绿植采购金额和数量",
+        "今年所有绿植采购情况"
+      ],
+      "sql": "SELECT\n  a.good_name AS \"绿植\",\n  COALESCE(NULLIF(a.good_specs, ''), '未填') AS \"规格\",\n  COUNT(*) AS \"采购明细行数\",\n  COUNT(DISTINCT b.id) AS \"采购单数\",\n  SUM(COALESCE(c.real_purchase_number, 0)) AS \"采购数量\",\n  ROUND(SUM(COALESCE(c.real_purchase_number, 0) * COALESCE(a.parchase_price, 0)), 2) AS \"采购金额\",\n  MIN(a.purchase_time) AS \"最早采购时间\",\n  MAX(a.purchase_time) AS \"最近采购时间\"\nFROM mysql.rs_cloud_flower.t_purchase_price_item a\nLEFT JOIN mysql.rs_cloud_flower.t_purchase_info b ON a.purchase_info_id = b.id\nLEFT JOIN mysql.rs_cloud_flower.t_plan_purchase_item c ON c.purchase_price_id = a.id\nLEFT JOIN mysql.rs_cloud_flower.t_flower_biz_item d ON d.id = c.flower_item_id\nLEFT JOIN mysql.rs_cloud_flower.t_flower_biz_info f ON f.id = d.flower_biz_id\nWHERE d.status <> -1\n  AND d.id IS NOT NULL\n  AND c.status <> -1\n  AND a.purchase_time >= TIMESTAMP ':year-01-01 00:00:00'\n  AND a.purchase_time < TIMESTAMP ':year-01-01 00:00:00' + INTERVAL '1' YEAR\nGROUP BY a.good_name, COALESCE(NULLIF(a.good_specs, ''), '未填')\nORDER BY \"采购金额\" DESC\nLIMIT 100",
+      "params": {
+        "year": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "target_view": "mysql.rs_cloud_flower.t_purchase_price_item",
+      "description": "全年各绿植采购情况（Trino 联邦 MySQL）",
+      "priority": 45,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-35",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(项目|XX).*(最近|近期|最新).*(报花|业务单)",
+        "(项目|XX).*(报花|业务单).*(列表|明细|清单)"
+      ],
+      "question_samples": [
+        "万象城最近的报花单",
+        "XX项目近期报花明细",
+        "查一下XX项目报花清单"
+      ],
+      "sql": "SELECT d.\"报花单号\", d.\"业务类型\", d.\"状态\", d.\"项目\", d.\"客户\", d.\"摆位\", d.\"绿植名\", d.\"规格\", d.\"数量\", d.\"行租金合计\", d.\"养护人\", d.\"业务时间\" FROM public.xycyl_ads_flowerbiz_lease_detail d WHERE d.\"项目\" ILIKE '%' || :project_name || '%' ORDER BY d.\"业务时间\" DESC, d.\"报花单号\" LIMIT :top_n",
+      "params": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 30
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_lease_detail",
+      "description": "XX 项目最近报花单列表（dbt mart）",
+      "priority": 20,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-36",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(审核|审批).*(超过|大于|超期).*(天|日)",
+        "(审核中|备货中|待结算).*(久|长时间|挂起|滞留)"
+      ],
+      "question_samples": [
+        "审核中超过 7 天的报花单",
+        "哪些报花单审批挂起太久",
+        "备货中超过 14 天的"
+      ],
+      "sql": "SELECT p.\"报花单号\", p.\"业务类型\", p.\"状态\", p.\"项目\", p.\"客户\", p.\"申请人\", p.\"养护人\", p.\"项目经理\", p.\"已挂起天数\", p.\"是否超期\", p.\"业务时间\" FROM public.xycyl_ads_flowerbiz_pending p WHERE p.\"状态\" = :status_name AND p.\"已挂起天数\" > :over_days ORDER BY p.\"已挂起天数\" DESC LIMIT 200",
+      "params": {
+        "status_name": {
+          "type": "string",
+          "default": "审核中"
+        },
+        "over_days": {
+          "type": "integer",
+          "default": 7
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_pending",
+      "description": "审核中超期报花单（dbt mart）",
+      "priority": 20,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-37",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(销售|售花|卖花).*(金额|总额).*(前|排行|排名|TOP)",
+        ".*月.*销售.*(项目|前)"
+      ],
+      "question_samples": [
+        "本月销售金额前 10",
+        "哪些项目销售金额最高",
+        "售花金额排行"
+      ],
+      "sql": "SELECT\n  s.\"项目\",\n  ROUND(SUM(CAST(NULLIF(CAST(s.\"销售金额全口径\" AS VARCHAR), '') AS DECIMAL(18,2))), 2) AS \"销售金额\",\n  SUM(CAST(NULLIF(CAST(s.\"销售单数\" AS VARCHAR), '') AS DECIMAL(18,2))) AS \"销售单数\",\n  SUM(CAST(NULLIF(CAST(s.\"赠送单数\" AS VARCHAR), '') AS DECIMAL(18,2))) AS \"赠送单数\"\nFROM public.xycyl_ads_flowerbiz_sale_summary s\nWHERE s.\"业务月份\" = :month\nGROUP BY s.\"项目\"\nORDER BY \"销售金额\" DESC\nLIMIT :top_n",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_sale_summary",
+      "description": "销售金额前 N 项目（dbt mart）",
+      "priority": 25,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-38",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(坏账|死账).*(客户|项目)",
+        ".*月.*坏账.*"
+      ],
+      "question_samples": [
+        "本月坏账客户",
+        "哪些项目坏账多",
+        "坏账金额排行"
+      ],
+      "sql": "SELECT b.\"项目\", b.\"客户\", ROUND(SUM(b.\"坏账成本全口径\")::numeric, 2) AS \"坏账成本\", ROUND(SUM(b.\"坏账租金损失全口径\")::numeric, 2) AS \"坏账租金损失\", SUM(b.\"坏账单数\") AS \"坏账单数\" FROM public.xycyl_ads_flowerbiz_baddebt_summary b WHERE b.\"业务月份\" = :month GROUP BY b.\"项目\", b.\"客户\" ORDER BY \"坏账成本\" DESC LIMIT 50",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_baddebt_summary",
+      "description": "坏账项目客户排行（dbt mart）",
+      "priority": 20,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-39",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(养护人|养护师傅|师傅).*(工作量|经手|多少|几次)",
+        ".*师傅.*(本月|这个月|月).*报花"
+      ],
+      "question_samples": [
+        "李师傅本月经手多少报花单",
+        "养护人工作量排行",
+        "XX师傅经手的报花"
+      ],
+      "sql": "SELECT c.\"养护人\", c.\"业务大类\", SUM(c.\"经手单数\") AS \"经手单数\", SUM(c.\"已结束单数\") AS \"已结束单数\", SUM(c.\"在途单数\") AS \"在途单数\", ROUND(SUM(c.\"租金净额全口径\")::numeric, 2) AS \"租金净额\" FROM public.xycyl_ads_flowerbiz_curing_workload c WHERE c.\"养护人\" ILIKE '%' || :curing_user_name || '%' AND c.\"业务月份\" = :month GROUP BY c.\"养护人\", c.\"业务大类\" ORDER BY \"经手单数\" DESC",
+      "params": {
+        "curing_user_name": {
+          "type": "string",
+          "required": true
+        },
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_curing_workload",
+      "description": "养护人本月报花工作量（dbt mart）",
+      "priority": 20,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-40",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(内购).*(金额|多少)",
+        ".*月.*内购"
+      ],
+      "question_samples": [
+        "本月内购金额",
+        "内购了多少花",
+        "内购明细"
+      ],
+      "sql": "SELECT m.project_name AS \"项目\", m.apply_user_name AS \"申请人\", ROUND(SUM(m.sale_amount)::numeric, 2) AS \"内购金额\", COUNT(DISTINCT m.biz_id) AS \"单数\" FROM public.xycyl_dwd_flowerbiz_main m WHERE m.biz_type_label = '内购' AND m.biz_month = :month AND m.is_finished = true GROUP BY m.project_name, m.apply_user_name ORDER BY \"内购金额\" DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        }
+      },
+      "target_view": "public.xycyl_dwd_flowerbiz_main",
+      "description": "内购金额汇总（dbt DWD）",
+      "priority": 20,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-41",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(加急|紧急).*(报花|业务单)",
+        "(近|最近).*(天|日).*加急"
+      ],
+      "question_samples": [
+        "近一周加急报花单",
+        "加急报花有哪些",
+        "紧急业务单"
+      ],
+      "sql": "SELECT m.biz_code AS \"报花单号\", m.biz_type_label AS \"业务类型\", m.status_label AS \"状态\", m.project_name AS \"项目\", m.apply_user_name AS \"申请人\", m.apply_time AS \"申请时间\", ROUND(m.rent_amount::numeric, 2) AS \"租金净额\" FROM public.xycyl_dwd_flowerbiz_main m WHERE COALESCE(m.urgent_raw, '') <> '' AND m.apply_time >= current_date - (:recent_days * interval '1 day') ORDER BY m.apply_time DESC LIMIT 100",
+      "params": {
+        "recent_days": {
+          "type": "integer",
+          "default": 7
+        }
+      },
+      "target_view": "public.xycyl_dwd_flowerbiz_main",
+      "description": "近 N 天加急报花单（dbt DWD）",
+      "priority": 15,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-42",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(各状态|按状态).*(报花|业务单).*(单数|数量|多少)",
+        ".*报花.*状态.*分布"
+      ],
+      "question_samples": [
+        "各状态报花单数",
+        "按状态统计报花单",
+        "报花状态分布"
+      ],
+      "sql": "SELECT p.\"状态\", COUNT(DISTINCT p.\"报花单id\") AS \"单数\", ROUND(SUM(p.\"租金净额\")::numeric, 2) AS \"租金净额\" FROM public.xycyl_ads_flowerbiz_pending p WHERE p.\"业务月份\" = :month GROUP BY p.\"状态\" ORDER BY \"单数\" DESC",
+      "params": {
+        "month": {
+          "type": "string",
+          "default": "CURRENT_MONTH"
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_pending",
+      "description": "各状态在途报花单数（dbt mart）",
+      "priority": 15,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-43",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        "(上月|上个月|前一月).*(加摆|加花).*(TOP|排行|前)",
+        "(上月).*报花.*金额"
+      ],
+      "question_samples": [
+        "上月加摆 TOP 项目",
+        "上个月哪个项目加摆最多",
+        "上月报花金额排行"
+      ],
+      "sql": "SELECT s.\"项目\", SUM(s.\"加摆单数\") AS \"加摆单数\", ROUND(SUM(s.\"租金净额全口径\")::numeric, 2) AS \"租金净额\" FROM public.xycyl_ads_flowerbiz_lease_summary s WHERE s.\"业务月份\" = to_char(current_date - interval '1 month', 'YYYY-MM') AND s.\"业务大类\" = 'lease' GROUP BY s.\"项目\" ORDER BY \"租金净额\" DESC LIMIT :top_n",
+      "params": {
+        "top_n": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_lease_summary",
+      "description": "上月加摆 TOP 项目（dbt mart）",
+      "priority": 15,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-44",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(项目经营|项目总览|项目).*?(TOP|top|排行|排名).*",
+        ".*(实摆|绿植).*?(TOP|top|排行|排名).*"
+      ],
+      "question_samples": [
+        "项目经营 TOP",
+        "项目实摆排行",
+        "绿植数量最多的项目"
+      ],
+      "sql": "SELECT project_name AS \"项目\", customer_name AS \"客户\", green_row_count AS \"实摆行数\", real_good_number_adminweb_sum AS \"实摆数量\", ROUND(rent_amount_adminweb_sum::numeric, 2) AS \"月租金\", ROUND(cost_amount_adminweb_sum::numeric, 2) AS \"成本\" FROM public.xycyl_ads_project_overview ORDER BY green_row_count DESC LIMIT :top_n",
+      "params": {
+        "top_n": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "target_view": "public.xycyl_ads_project_overview",
+      "description": "项目经营 TOP（dbt mart，adminweb ProjectSummary 对账口径）",
+      "priority": 50,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-45",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*合同.*(到期|快到期|即将到期|过期).*",
+        ".*(30天|60天|90天).*合同.*"
+      ],
+      "question_samples": [
+        "哪些合同90天内到期",
+        "即将到期的合同有哪些"
+      ],
+      "sql": "SELECT contract_code AS \"合同编码\", contract_title AS \"合同名称\", customer_name AS \"客户\", contract_status_label AS \"合同状态\", end_date AS \"到期日\", days_to_end_date AS \"剩余天数\", expiry_alert_label AS \"预警\" FROM public.xycyl_ads_contract_expiry_alert WHERE days_to_end_date BETWEEN 0 AND :days ORDER BY days_to_end_date ASC LIMIT :top_n",
+      "params": {
+        "days": {
+          "type": "integer",
+          "default": 90
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 100
+        }
+      },
+      "target_view": "public.xycyl_ads_contract_expiry_alert",
+      "description": "合同到期预警（dbt mart）",
+      "priority": 50,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-46",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(项目状态|实摆状态|状态分布).*",
+        ".*(正常项目|停用项目|摆放中).*"
+      ],
+      "question_samples": [
+        "项目状态和实摆状态分布",
+        "正常项目和停用项目各多少"
+      ],
+      "sql": "SELECT status_subject AS \"对象\", status_label AS \"状态\", row_count AS \"数量\" FROM public.xycyl_ads_project_status_dist ORDER BY status_subject, row_count DESC",
+      "params": {},
+      "target_view": "public.xycyl_ads_project_status_dist",
+      "description": "项目/实摆状态分布（dbt mart）",
+      "priority": 45,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-47",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(项目|绿植|实摆).*(月报|月度|变化|加减调换).*",
+        ".*(加摆|撤摆|调换).*月.*"
+      ],
+      "question_samples": [
+        "项目绿植月报",
+        "实摆月度变化",
+        "加减调换月报"
+      ],
+      "sql": "SELECT project_name AS \"项目\", customer_name AS \"客户\", stat_month AS \"月份\", status_label AS \"实摆状态\", green_row_count AS \"实摆行数\", real_good_number_adminweb_sum AS \"实摆数量\", ROUND(rent_amount_adminweb_sum::numeric, 2) AS \"月租金\" FROM public.xycyl_ads_project_green_change_monthly WHERE (:project_name IS NULL OR project_name ILIKE '%' || :project_name || '%') ORDER BY stat_month DESC, green_row_count DESC LIMIT :top_n",
+      "params": {
+        "project_name": {
+          "type": "string"
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 100
+        }
+      },
+      "target_view": "public.xycyl_ads_project_green_change_monthly",
+      "description": "绿植加减调换月报（dbt mart，adminweb ProjectSummary 对账口径）",
+      "priority": 45,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-48",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(项目|XX).*(实摆|绿植).*(趋势|近.*月|月度).*"
+      ],
+      "question_samples": [
+        "XX项目最近月度实摆趋势",
+        "某项目近12个月绿植趋势"
+      ],
+      "sql": "SELECT stat_month AS \"月份\", project_name AS \"项目\", green_row_count AS \"实摆行数\", real_good_number_adminweb_sum AS \"实摆数量\", ROUND(rent_amount_adminweb_sum::numeric, 2) AS \"月租金\", ROUND(cost_amount_adminweb_sum::numeric, 2) AS \"成本\" FROM public.xycyl_dws_project_green_monthly WHERE project_name ILIKE '%' || :project_name || '%' ORDER BY stat_month DESC LIMIT :months",
+      "params": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        },
+        "months": {
+          "type": "integer",
+          "default": 12
+        }
+      },
+      "target_view": "public.xycyl_dws_project_green_monthly",
+      "description": "项目月度实摆趋势（dbt mart，adminweb ProjectSummary 对账口径）",
+      "priority": 45,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-49",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(摆位调整|调整绿植|调整状态).*",
+        ".*(调位|移位).*"
+      ],
+      "question_samples": [
+        "摆位调整完成情况",
+        "调整绿植按状态统计"
+      ],
+      "sql": "SELECT adjustment_status_label AS \"状态\", COUNT(*) AS \"明细数\", SUM(adjustment_number) AS \"调整数量\", ROUND(SUM(rent_amount_raw)::numeric, 2) AS \"租金raw合计\" FROM public.xycyl_dwd_position_adjustment WHERE (:project_name IS NULL OR project_name ILIKE '%' || :project_name || '%') GROUP BY adjustment_status_label ORDER BY \"明细数\" DESC",
+      "params": {
+        "project_name": {
+          "type": "string"
+        }
+      },
+      "target_view": "public.xycyl_dwd_position_adjustment",
+      "description": "摆位调整状态统计（dbt DWD）",
+      "priority": 40,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-50",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*客户.*(项目|项目点).*(几个|多少|哪些|清单).*"
+      ],
+      "question_samples": [
+        "XX客户有哪些项目",
+        "某客户项目清单"
+      ],
+      "sql": "SELECT customer_name AS \"客户\", project_name AS \"项目\", project_status_label AS \"项目状态\", green_row_count AS \"实摆行数\", real_good_number_adminweb_sum AS \"实摆数量\" FROM public.xycyl_ads_project_overview WHERE customer_name ILIKE '%' || :customer_name || '%' ORDER BY project_name",
+      "params": {
+        "customer_name": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "target_view": "public.xycyl_ads_project_overview",
+      "description": "客户项目清单（dbt mart，adminweb ProjectSummary 对账口径）",
+      "priority": 40,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-51",
+      "domain": "project",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(项目|XX).*(有哪些|明细|清单).*(实摆绿植|绿植|植物).*"
+      ],
+      "question_samples": [
+        "XX项目当前实摆绿植有哪些",
+        "某项目绿植明细"
+      ],
+      "sql": "SELECT project_name AS \"项目\", position_full_name AS \"摆位\", goods_name AS \"绿植\", goods_norms AS \"规格\", status_label AS \"状态\", effective_good_number AS \"实摆数量\", ROUND(rent_amount_raw::numeric, 2) AS \"租金raw\" FROM public.xycyl_dwd_project_green_snapshot WHERE project_name ILIKE '%' || :project_name || '%' ORDER BY position_full_name, goods_name LIMIT :top_n",
+      "params": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        },
+        "top_n": {
+          "type": "integer",
+          "default": 200
+        }
+      },
+      "target_view": "public.xycyl_dwd_project_green_snapshot",
+      "description": "项目实摆绿植明细（dbt DWD）",
+      "priority": 40,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-52",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(20\\d{2}|\\d{4}年|今年|去年).*(销售|售花|卖花).*(情况|统计|汇总|金额|收入).*",
+        ".*(销售|售花|卖花).*(20\\d{2}|\\d{4}年|今年|去年).*(情况|统计|汇总|金额|收入).*"
+      ],
+      "question_samples": [
+        "查询2026年销售情况",
+        "统计2026年销售金额",
+        "今年销售情况汇总"
+      ],
+      "sql": "SELECT\n  s.\"业务月份\",\n  s.\"项目\",\n  ROUND(SUM(CAST(NULLIF(CAST(s.\"销售金额全口径\" AS VARCHAR), '') AS DECIMAL(18,2))), 2) AS \"销售金额\",\n  SUM(CAST(NULLIF(CAST(s.\"销售单数\" AS VARCHAR), '') AS DECIMAL(18,2))) AS \"销售单数\",\n  SUM(CAST(NULLIF(CAST(s.\"赠送单数\" AS VARCHAR), '') AS DECIMAL(18,2))) AS \"赠送单数\",\n  ROUND(SUM(CAST(NULLIF(CAST(s.\"赠送成本全口径\" AS VARCHAR), '') AS DECIMAL(18,2))), 2) AS \"赠送成本\"\nFROM public.xycyl_ads_flowerbiz_sale_summary s\nWHERE s.\"年份\" = :year\nGROUP BY s.\"业务月份\", s.\"项目\"\nORDER BY s.\"业务月份\", \"销售金额\" DESC\nLIMIT 200",
+      "params": {
+        "year": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "target_view": "public.xycyl_ads_flowerbiz_sale_summary",
+      "description": "年度销售情况汇总（dbt mart）",
+      "priority": 35,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-53",
+      "domain": "warehouse",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(库存现量|当前库存|库存现状|库存总览|库存看板).*",
+        ".*(展示|查看|查询|统计).*(库存).*"
+      ],
+      "question_samples": [
+        "展示当前库存现状",
+        "库存现量按库房和SKU汇总"
+      ],
+      "sql": "SELECT\n  COALESCE(storehouse_name, '未填') AS \"库房\",\n  CAST(good_price_id AS VARCHAR) AS \"SKU\",\n  COALESCE(good_name, '未填') AS \"物品名称\",\n  COALESCE(good_norms, '') AS \"规格\",\n  COALESCE(good_specs, '') AS \"属性\",\n  COALESCE(good_unit, '') AS \"单位\",\n  SUM(COALESCE(good_number, 0)) AS \"可用库存\",\n  ROUND(SUM(CAST(COALESCE(good_number, 0) AS DOUBLE) * CAST(COALESCE(out_cost, 0) AS DOUBLE)), 2) AS \"库存成本\",\n  COUNT(*) AS \"库存行数\",\n  MAX(update_time) AS \"最近更新时间\"\nFROM mysql.rs_cloud_flower.s_stock_info\nWHERE (del_flag IS NULL OR del_flag = '0')\nGROUP BY\n  COALESCE(storehouse_name, '未填'),\n  good_price_id,\n  COALESCE(good_name, '未填'),\n  COALESCE(good_norms, ''),\n  COALESCE(good_specs, ''),\n  COALESCE(good_unit, '')\nORDER BY 7 DESC, 8 DESC\nLIMIT 100",
+      "params": {},
+      "target_view": "mysql.rs_cloud_flower.s_stock_info",
+      "description": "库存现量按库房和 SKU 汇总（Trino 联邦 MySQL）",
+      "priority": 46,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-54",
+      "domain": "warehouse",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(低库存|缺货).*(预警|告警|清单|列表|情况).*",
+        ".*(库存).*(不足|偏低|低于|小于).*(预警|告警|清单|列表|情况)?.*"
+      ],
+      "question_samples": [
+        "查看低库存SKU清单",
+        "低库存预警"
+      ],
+      "sql": "SELECT\n  COALESCE(storehouse_name, '未填') AS \"库房\",\n  CAST(good_price_id AS VARCHAR) AS \"SKU\",\n  COALESCE(good_name, '未填') AS \"物品名称\",\n  COALESCE(good_norms, '') AS \"规格\",\n  COALESCE(good_specs, '') AS \"属性\",\n  COALESCE(good_unit, '') AS \"单位\",\n  SUM(COALESCE(good_number, 0)) AS \"可用库存\",\n  ROUND(SUM(CAST(COALESCE(good_number, 0) AS DOUBLE) * CAST(COALESCE(out_cost, 0) AS DOUBLE)), 2) AS \"库存成本\",\n  MAX(update_time) AS \"最近更新时间\"\nFROM mysql.rs_cloud_flower.s_stock_info\nWHERE (del_flag IS NULL OR del_flag = '0')\nGROUP BY\n  COALESCE(storehouse_name, '未填'),\n  good_price_id,\n  COALESCE(good_name, '未填'),\n  COALESCE(good_norms, ''),\n  COALESCE(good_specs, ''),\n  COALESCE(good_unit, '')\nHAVING SUM(COALESCE(good_number, 0)) <= 2\nORDER BY 7 ASC, 3\nLIMIT 100",
+      "params": {},
+      "target_view": "mysql.rs_cloud_flower.s_stock_info",
+      "description": "低库存 SKU 清单（Trino 联邦 MySQL 弱路径）",
+      "priority": 47,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-55",
+      "domain": "flowerbiz",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(\\d{4}年\\d{1,2}月|\\d{4}-\\d{2}).*(报花单据|报花单|报花业务单).*(查|查询|看|查看|列表|明细|清单)?.*",
+        ".*(报花单据|报花单|报花业务单).*(\\d{4}年\\d{1,2}月|\\d{4}-\\d{2}).*(查|查询|看|查看|列表|明细|清单)?.*"
+      ],
+      "question_samples": [
+        "2026年3月的报花单据查下",
+        "查询2026-03报花单据"
+      ],
+      "sql": "\nSELECT\n  CAST(f.id AS VARCHAR) AS \"报花单ID\",\n  f.code AS \"报花单号\",\n  f.title AS \"标题\",\n  f.biz_type AS \"业务类型code\",\n  CASE f.biz_type\n    WHEN 1 THEN '换花'\n    WHEN 2 THEN '加花'\n    WHEN 3 THEN '减花'\n    WHEN 4 THEN '调花'\n    WHEN 5 THEN '售花'\n    WHEN 6 THEN '赠花'\n    WHEN 7 THEN '坏账'\n    WHEN 8 THEN '内购'\n    WHEN 11 THEN '加盆架'\n    WHEN 12 THEN '减盆架'\n    ELSE CAST(f.biz_type AS VARCHAR)\n  END AS \"业务类型\",\n  f.project_name AS \"项目点\",\n  f.customer_name AS \"客户\",\n  f.curing_user_name AS \"养护人\",\n  f.project_manage_name AS \"项目经理\",\n  f.apply_use_name AS \"发起人\",\n  f.apply_time AS \"申请时间\",\n  f.create_time AS \"创建时间\",\n  f.finish_time AS \"完成时间\",\n  f.status AS \"状态code\",\n  CASE f.status\n    WHEN -1 THEN '作废'\n    WHEN 1 THEN '待发起'\n    WHEN 2 THEN '待审批'\n    WHEN 3 THEN '待鉴定'\n    WHEN 4 THEN '待分配'\n    WHEN 5 THEN '待采购'\n    WHEN 6 THEN '待配送'\n    WHEN 7 THEN '待提花'\n    WHEN 8 THEN '已完成'\n    WHEN 20 THEN '草稿'\n    WHEN 21 THEN '驳回'\n    ELSE CAST(f.status AS VARCHAR)\n  END AS \"状态\",\n  f.print_status AS \"打印状态\"\nFROM mysql.rs_cloud_flower.t_flower_biz_info f\nWHERE (f.del_flag IS NULL OR f.del_flag = '0')\n  AND f.create_time >= CAST(:month || '-01 00:00:00' AS TIMESTAMP)\n  AND f.create_time < CAST(:month || '-01 00:00:00' AS TIMESTAMP) + INTERVAL '1' MONTH\nORDER BY f.create_time DESC\nLIMIT 100\n",
+      "params": {
+        "month": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "target_view": "mysql.rs_cloud_flower.t_flower_biz_info",
+      "description": "某月报花单据明细（业务对象）",
+      "priority": 55,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-56",
+      "domain": "finance",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(20\\d{2}|\\d{4}年|今年|去年).*(财务|收款|回款|应收|实收).*(数据|情况|统计|汇总|总览).*",
+        ".*(财务|收款|回款|应收|实收).*(20\\d{2}|\\d{4}年|今年|去年).*(数据|情况|统计|汇总|总览).*"
+      ],
+      "question_samples": [
+        "2026年财务数据统计下",
+        "看下2026年财务数据统计",
+        "今年财务数据汇总"
+      ],
+      "sql": "\nWITH months AS (\n  SELECT month_key\n  FROM (VALUES\n    (CAST(:year AS VARCHAR) || '-01'), (CAST(:year AS VARCHAR) || '-02'),\n    (CAST(:year AS VARCHAR) || '-03'), (CAST(:year AS VARCHAR) || '-04'),\n    (CAST(:year AS VARCHAR) || '-05'), (CAST(:year AS VARCHAR) || '-06'),\n    (CAST(:year AS VARCHAR) || '-07'), (CAST(:year AS VARCHAR) || '-08'),\n    (CAST(:year AS VARCHAR) || '-09'), (CAST(:year AS VARCHAR) || '-10'),\n    (CAST(:year AS VARCHAR) || '-11'), (CAST(:year AS VARCHAR) || '-12')\n  ) AS v(month_key)\n),\nsettlement AS (\n  SELECT\n    s.\"业务月份\" AS finance_month,\n    COUNT(DISTINCT s.\"项目\") AS settlement_project_count,\n    SUM(s.\"结算单数\") AS settlement_record_count,\n    ROUND(SUM(s.\"应收折前\"), 2) AS receivable_before_discount,\n    ROUND(SUM(s.\"折后实收\"), 2) AS discounted_receivable,\n    ROUND(SUM(s.\"已回款\"), 2) AS paid_amount,\n    ROUND(SUM(s.\"未回款\"), 2) AS unpaid_amount,\n    ROUND(AVG(s.\"回款进度\"), 4) AS payment_progress\n  FROM public.xycyl_ads_finance_month_settlement s\n  WHERE s.\"业务月份\" LIKE CAST(:year AS VARCHAR) || '-%'\n  GROUP BY s.\"业务月份\"\n),\ncollection AS (\n  SELECT\n    c.\"收款月份\" AS finance_month,\n    ROUND(SUM(c.\"收款金额\"), 2) AS collection_amount,\n    SUM(c.\"收款单数\") AS collection_record_count,\n    COUNT(DISTINCT c.\"项目\") AS collection_project_count\n  FROM public.xycyl_ads_finance_collection c\n  WHERE c.\"收款月份\" LIKE CAST(:year AS VARCHAR) || '-%'\n  GROUP BY c.\"收款月份\"\n)\nSELECT\n  months.month_key AS \"财务月份\",\n  COALESCE(s.settlement_project_count, 0) AS \"结算项目数\",\n  COALESCE(s.settlement_record_count, 0) AS \"结算单数\",\n  COALESCE(s.receivable_before_discount, 0) AS \"应收折前\",\n  COALESCE(s.discounted_receivable, 0) AS \"折后实收\",\n  COALESCE(s.paid_amount, 0) AS \"已回款\",\n  COALESCE(s.unpaid_amount, 0) AS \"未回款\",\n  COALESCE(s.payment_progress, 0) AS \"平均回款进度\",\n  COALESCE(c.collection_amount, 0) AS \"收款金额\",\n  COALESCE(c.collection_record_count, 0) AS \"收款单数\",\n  COALESCE(c.collection_project_count, 0) AS \"收款项目数\"\nFROM months\nLEFT JOIN settlement s ON months.month_key = s.finance_month\nLEFT JOIN collection c ON months.month_key = c.finance_month\nORDER BY months.month_key\n",
+      "params": {
+        "year": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "target_view": "public.xycyl_ads_finance_month_settlement",
+      "description": "年度财务数据统计",
+      "priority": 42,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    },
+    {
+      "id": "TPL-57",
+      "domain": "finance",
+      "role_hint": null,
+      "question_patterns": [
+        ".*(20\\d{2}|\\d{4}年|今年|去年).*(凭证|会计凭证).*(数据|情况|统计|汇总|总览|数量|金额).*",
+        ".*(凭证|会计凭证).*(20\\d{2}|\\d{4}年|今年|去年).*(数据|情况|统计|汇总|总览|数量|金额).*"
+      ],
+      "question_samples": [
+        "2026年凭证的数据统计下",
+        "看下2026年凭证数据统计",
+        "今年凭证统计"
+      ],
+      "sql": "\nSELECT\n  v.\"会计月份\",\n  v.\"业务类型\",\n  v.\"凭证状态\",\n  SUM(v.\"凭证数\") AS \"凭证数\",\n  SUM(v.\"分录数\") AS \"分录数\",\n  ROUND(SUM(v.\"借方金额\"), 2) AS \"借方金额\",\n  ROUND(SUM(v.\"贷方金额\"), 2) AS \"贷方金额\",\n  ROUND(SUM(v.\"借贷差额\"), 2) AS \"借贷差额\",\n  SUM(v.\"平衡凭证数\") AS \"平衡凭证数\",\n  SUM(v.\"不平衡凭证数\") AS \"不平衡凭证数\",\n  CASE\n    WHEN ABS(SUM(v.\"借贷差额\")) < 0.005 THEN '平衡'\n    ELSE '不平衡'\n  END AS \"借贷平衡\"\nFROM public.xycyl_ads_finance_voucher_monthly v\nWHERE v.\"会计月份\" LIKE CAST(:year AS VARCHAR) || '-%'\nGROUP BY v.\"会计月份\", v.\"业务类型\", v.\"凭证状态\"\nORDER BY v.\"会计月份\", v.\"业务类型\", v.\"凭证状态\"\n",
+      "params": {
+        "year": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "target_view": "public.xycyl_ads_finance_voucher_monthly",
+      "description": "年度凭证数据统计",
+      "priority": 45,
+      "is_active": true,
+      "datasource_ref": "prs-mart",
+      "version": "1"
+    }
+  ]
+}

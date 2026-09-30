@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+prs_dir="$(cd "$(dirname "$0")/.." && pwd)"
+if [[ $# -ne 1 ]]; then
+  echo 'Usage: STUDIO_PACK_CLI=/build/dts-studio/engine/tools/pack-cli build-studio-pack /new/output.dtspack' >&2
+  exit 2
+fi
+: "${STUDIO_PACK_CLI:?Set STUDIO_PACK_CLI to the built Studio validator wrapper}"
+"$STUDIO_PACK_CLI" validate "$prs_dir/pack/studio" --strict
+exec "$STUDIO_PACK_CLI" build "$prs_dir/pack/studio" -o "$1" --strict

@@ -1,0 +1,190 @@
+{
+  "apiVersion": "dts.pack/v1",
+  "name": "prs-flower",
+  "version": "0.1.1",
+  "vendor": "yuzhi",
+  "requires": {
+    "dts-studio": ">=1.0.0"
+  },
+  "datasources": [
+    {
+      "ref": "prs-mart"
+    },
+    {
+      "ref": "prs-app"
+    }
+  ],
+  "capabilities": {
+    "ontology": [
+      {
+        "path": "semantic-packs/finance.json",
+        "key": "semantic-packs/finance.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "semantic-packs/flowerbiz.json",
+        "key": "semantic-packs/flowerbiz.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "semantic-packs/procurement.json",
+        "key": "semantic-packs/procurement.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "semantic-packs/project-fulfillment.json",
+        "key": "semantic-packs/project-fulfillment.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "semantic-packs/warehouse.json",
+        "key": "semantic-packs/warehouse.json",
+        "schemaVersion": 1
+      }
+    ],
+    "evaluations": [
+      {
+        "path": "governance/caliber-cross-source-regression.v1.json",
+        "key": "governance/caliber-cross-source-regression.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-detail-reconciliation-samples.v1.json",
+        "key": "governance/finance-detail-reconciliation-samples.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-differential-grid-cases.v1.json",
+        "key": "governance/finance-differential-grid-cases.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-invariant-regression-grid.v1.json",
+        "key": "governance/finance-invariant-regression-grid.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-summary-dual-reconciliation-cases.v1.json",
+        "key": "governance/finance-summary-dual-reconciliation-cases.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/nl2sql-accuracy-golden-set.v1.json",
+        "key": "governance/nl2sql-accuracy-golden-set.v1.json",
+        "schemaVersion": 1
+      }
+    ],
+    "guardrails": [
+      {
+        "path": "governance/caliber-rules.v1.json",
+        "key": "governance/caliber-rules.v1.json",
+        "schemaVersion": 1
+      }
+    ],
+    "quality_rules": [
+      {
+        "path": "governance/finance-amount-column-alignment.v1.json",
+        "key": "governance/finance-amount-column-alignment.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-answer-audit-trail.v1.json",
+        "key": "governance/finance-answer-audit-trail.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-application-mysql-authority-sql.v1.json",
+        "key": "governance/finance-application-mysql-authority-sql.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-application-mysql-oracle-sql.v1.json",
+        "key": "governance/finance-application-mysql-oracle-sql.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-authority-registry.v1.json",
+        "key": "governance/finance-authority-registry.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-invariants.v1.json",
+        "key": "governance/finance-invariants.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-oracle-registry.v1.json",
+        "key": "governance/finance-oracle-registry.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-reconciliation-scorecard.v1.json",
+        "key": "governance/finance-reconciliation-scorecard.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-signoff-baseline.v1.json",
+        "key": "governance/finance-signoff-baseline.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-voucher-subject-tieout.v1.json",
+        "key": "governance/finance-voucher-subject-tieout.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/finance-weak-path-reconciliation-candidates.v1.json",
+        "key": "governance/finance-weak-path-reconciliation-candidates.v1.json",
+        "schemaVersion": 1
+      },
+      {
+        "path": "governance/voucher-ledger-tieout-mapping.v1.json",
+        "key": "governance/voucher-ledger-tieout-mapping.v1.json",
+        "schemaVersion": 1
+      }
+    ],
+    "persona": [
+      {
+        "path": "planner/business-direct-responses.json",
+        "key": "planner/business-direct-responses.json",
+        "schemaVersion": 1
+      }
+    ],
+    "prompts": [
+      {
+        "path": "prompts/flowerbiz-constraints.txt",
+        "key": "prompts/flowerbiz-constraints.txt",
+        "schemaVersion": 1
+      },
+      {
+        "path": "prompts/flowerbiz-few-shots.txt",
+        "key": "prompts/flowerbiz-few-shots.txt",
+        "schemaVersion": 1
+      },
+      {
+        "path": "prompts/settlement-constraints.txt",
+        "key": "prompts/settlement-constraints.txt",
+        "schemaVersion": 1
+      },
+      {
+        "path": "prompts/settlement-few-shots.txt",
+        "key": "prompts/settlement-few-shots.txt",
+        "schemaVersion": 1
+      }
+    ],
+    "templates": [
+      {
+        "path": "templates/query-templates.json",
+        "key": "prs-query-templates",
+        "schemaVersion": 1
+      }
+    ],
+    "actions": [
+      {
+        "key": "bad-debt-draft",
+        "path": "actions/bad-debt-draft.json",
+        "schemaVersion": 1
+      }
+    ]
+  }
+}
