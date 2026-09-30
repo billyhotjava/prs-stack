@@ -1,0 +1,35 @@
+server:
+  port: 8084
+  shutdown: graceful
+
+spring:
+  application:
+    name: prs-project
+  datasource:
+    url: jdbc:postgresql://${PRS_PG_HOST:localhost}:${PRS_PG_PORT:5432}/${PRS_PG_DB:prs}
+    username: ${PRS_PG_USER:prs}
+    password: ${PRS_PG_PASSWORD:prs}
+    driver-class-name: org.postgresql.Driver
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+prs:
+  sync:
+    default-tenant: ${PRS_SYNC_DEFAULT_TENANT:1}
+  openapi:
+    title: PRS Project API
+
+logging:
+  structured:
+    format:
+      console: ecs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

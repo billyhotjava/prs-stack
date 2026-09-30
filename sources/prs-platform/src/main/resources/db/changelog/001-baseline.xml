@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- 基线表：租户/字典/组织/审计/outbox。业务表随各域 Sprint 建各自 changeSet。 -->
+
+  <changeSet id="001-tenant" author="prs">
+    <createTable tableName="sys_tenant">
+      <column name="id" type="VARCHAR(64)"><constraints primaryKey="true"/></column>
+      <column name="code" type="VARCHAR(64)"><constraints nullable="false" unique="true"/></column>
+      <column name="name" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="status" type="VARCHAR(16)" defaultValue="ACTIVE"><constraints nullable="false"/></column>
+      <column name="create_time" type="TIMESTAMPTZ" defaultValueComputed="now()"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="002-dict" author="prs">
+    <createTable tableName="sys_dict">
+      <column name="id" type="BIGSERIAL"><constraints primaryKey="true"/></column>
+      <column name="type" type="VARCHAR(64)"><constraints nullable="false"/></column>
+      <column name="value" type="VARCHAR(64)"><constraints nullable="false"/></column>
+      <column name="label" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="sort_no" type="INT" defaultValueNumeric="0"/>
+    </createTable>
+    <createIndex tableName="sys_dict" indexName="idx_sys_dict_type">
+      <column name="type"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="003-org" author="prs">
+    <createTable tableName="sys_org">
+      <column name="id" type="VARCHAR(64)"><constraints primaryKey="true"/></column>
+      <column name="name" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="parent_id" type="VARCHAR(64)"/>
+      <column name="tenant_id" type="VARCHAR(64)"><constraints nullable="false"/></column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="004-audit" author="prs">
+    <createTable tableName="audit_event">
+      <column name="id" type="BIGSERIAL"><constraints primaryKey="true"/></column>
+      <column name="occurred_at" type="TIMESTAMPTZ" defaultValueComputed="now()"><constraints nullable="false"/></column>
+      <column name="actor" type="VARCHAR(128)"/>
+      <column name="action" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="target" type="VARCHAR(256)"/>
+      <column name="detail" type="JSONB"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="005-outbox" author="prs">
+    <createTable tableName="outbox_event">
+      <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()"><constraints primaryKey="true"/></column>
+      <column name="aggregate" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="aggregate_id" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="type" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="payload" type="JSONB"><constraints nullable="false"/></column>
+      <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="now()"><constraints nullable="false"/></column>
+      <column name="published" type="BOOLEAN" defaultValueBoolean="false"><constraints nullable="false"/></column>
+    </createTable>
+    <createIndex tableName="outbox_event" indexName="idx_outbox_unpublished">
+      <column name="published"/>
+      <column name="created_at"/>
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- 基线种子（dev/测试）：测试租户 + 最小字典 + 测试组织。生产种子另行评审。 -->
+
+  <changeSet id="006-seed-tenant" author="prs">
+    <insert tableName="sys_tenant">
+      <column name="id" value="t1"/>
+      <column name="code" value="T1"/>
+      <column name="name" value="测试租户"/>
+    </insert>
+  </changeSet>
+
+  <changeSet id="007-seed-dict" author="prs">
+    <insert tableName="sys_dict">
+      <column name="type" value="expense_type"/>
+      <column name="value" value="1"/>
+      <column name="label" value="采购报销"/>
+      <column name="sort_no" valueNumeric="1"/>
+    </insert>
+    <insert tableName="sys_dict">
+      <column name="type" value="expense_type"/>
+      <column name="value" value="2"/>
+      <column name="label" value="运营报销"/>
+      <column name="sort_no" valueNumeric="2"/>
+    </insert>
+    <insert tableName="sys_dict">
+      <column name="type" value="biz_type"/>
+      <column name="value" value="1"/>
+      <column name="label" value="换花"/>
+      <column name="sort_no" valueNumeric="1"/>
+    </insert>
+  </changeSet>
+
+  <changeSet id="008-seed-org" author="prs">
+    <insert tableName="sys_org">
+      <column name="id" value="d1"/>
+      <column name="name" value="测试部门"/>
+      <column name="tenant_id" value="t1"/>
+    </insert>
+  </changeSet>
+</databaseChangeLog>

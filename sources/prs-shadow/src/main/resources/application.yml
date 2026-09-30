@@ -1,0 +1,28 @@
+server:
+  port: 8083
+  shutdown: graceful
+
+spring:
+  application:
+    name: prs-shadow
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+prs:
+  openapi:
+    title: PRS Shadow API
+
+logging:
+  structured:
+    format:
+      console: ecs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

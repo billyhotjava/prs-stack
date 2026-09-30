@@ -1,0 +1,60 @@
+# 受保护路径走 forwardAuth（鉴权服务双模验证），成功后回注 X-DTS-* 头给下游。
+# 白名单（健康检查、鉴权服务自身）直通，避免认证环路。
+# /api/internal/sync 为集群内同步端点（dev 直通；生产靠 NetworkPolicy 限制，见 T05）。
+http:
+  routers:
+    prs-auth-internal:
+      rule: "PathPrefix(`/api/internal/auth`)"
+      service: prs-auth
+      entryPoints: ["web"]
+
+    prs-health:
+      rule: "PathPrefix(`/actuator/health`)"
+      service: prs-shadow
+      entryPoints: ["web"]
+
+    prs-internal-sync:
+      rule: "PathPrefix(`/api/internal/sync`)"
+      service: prs-project
+      entryPoints: ["web"]
+
+    prs-projects:
+      rule: "PathPrefix(`/api/prs/`)"
+      service: prs-project
+      entryPoints: ["web"]
+      middlewares: ["prs-forward-auth"]
+
+    prs-shadow:
+      rule: "PathPrefix(`/api/`)"
+      service: prs-shadow
+      entryPoints: ["web"]
+      middlewares: ["prs-forward-auth"]
+
+  middlewares:
+    prs-forward-auth:
+      forwardAuth:
+        address: "http://prs-auth:8081/api/internal/auth/forward"
+        authRequestHeaders:
+          - "Authorization"
+          - "Cookie"
+        authResponseHeaders:
+          - "X-DTS-User-Id"
+          - "X-DTS-User-Name"
+          - "X-DTS-Display-Name"
+          - "X-DTS-Roles"
+          - "X-DTS-Dept-Code"
+          - "X-DTS-Tenant-Id"
+
+  services:
+    prs-auth:
+      loadBalancer:
+        servers:
+          - url: "http://prs-auth:8081"
+    prs-shadow:
+      loadBalancer:
+        servers:
+          - url: "http://prs-shadow:8083"
+    prs-project:
+      loadBalancer:
+        servers:
+          - url: "http://prs-project:8084"

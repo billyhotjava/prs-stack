@@ -1,0 +1,37 @@
+server:
+  port: 8081
+  shutdown: graceful
+
+spring:
+  application:
+    name: prs-auth
+  data:
+    redis:
+      host: ${PRS_VALKEY_HOST:localhost}
+      port: ${PRS_VALKEY_PORT:6379}
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+prs:
+  auth:
+    issuer-uri: ${PRS_AUTH_ISSUER:http://localhost:38082/realms/flower-test}
+    trusted-issuers: ${PRS_AUTH_TRUSTED_ISSUERS:}
+    audience: ${PRS_AUTH_AUDIENCE:prs-app}
+    session-ttl: 8h
+  openapi:
+    title: PRS Auth API
+
+logging:
+  structured:
+    format:
+      console: ecs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

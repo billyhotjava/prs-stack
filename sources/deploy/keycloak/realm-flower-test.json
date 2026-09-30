@@ -1,0 +1,114 @@
+{
+  "realm": "flower-test",
+  "enabled": true,
+  "displayName": "PRS 花卉重建（测试）",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "requiredActions": [
+    {
+      "alias": "VERIFY_PROFILE",
+      "name": "Verify Profile",
+      "providerId": "VERIFY_PROFILE",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 10,
+      "config": {}
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "GM", "description": "总经理" },
+      { "name": "PM", "description": "项目经理" },
+      { "name": "STAFF", "description": "员工（含养护/库房/调度）" },
+      { "name": "FIN", "description": "财务" }
+    ]
+  },
+  "groups": [
+    {
+      "name": "tenants",
+      "path": "/tenants",
+      "subGroups": [
+        { "name": "1", "path": "/tenants/1" },
+        { "name": "2", "path": "/tenants/2" }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "dave",
+      "enabled": true,
+      "email": "dave@test.local",
+      "emailVerified": true,
+      "firstName": "Dave",
+      "lastName": "Test",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "test1234", "temporary": false }],
+      "realmRoles": ["GM"],
+      "groups": ["/tenants/1"]
+    },
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@test.local",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Test",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "test1234", "temporary": false }],
+      "realmRoles": ["PM"],
+      "groups": ["/tenants/1"]
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "email": "bob@test.local",
+      "emailVerified": true,
+      "firstName": "Bob",
+      "lastName": "Test",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "test1234", "temporary": false }],
+      "realmRoles": ["STAFF"],
+      "groups": ["/tenants/2"]
+    },
+    {
+      "username": "carol",
+      "enabled": true,
+      "email": "carol@test.local",
+      "emailVerified": true,
+      "firstName": "Carol",
+      "lastName": "Test",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "test1234", "temporary": false }],
+      "realmRoles": ["FIN"],
+      "groups": ["/tenants/1"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "prs-app",
+      "name": "PRS 测试客户端（dev only：开 direct grant 方便 curl 取 token）",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["*"],
+      "webOrigins": ["*"],
+      "protocolMappers": [
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "groups",
+            "full.path": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

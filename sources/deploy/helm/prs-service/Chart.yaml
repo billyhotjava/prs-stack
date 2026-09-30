@@ -1,0 +1,6 @@
+apiVersion: v2
+name: prs-service
+description: PRS service chart skeleton (R-011 k8s-ready, dev)
+type: application
+version: 0.1.0
+appVersion: 1.0.0-SNAPSHOT

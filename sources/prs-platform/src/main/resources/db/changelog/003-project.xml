@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- F7/T01：prs.project（对齐老 p_project 最小子集）+ RLS FORCE + 租户种子。 -->
+
+  <changeSet id="009-project-schema" author="prs">
+    <sql>CREATE SCHEMA IF NOT EXISTS prs</sql>
+  </changeSet>
+
+  <changeSet id="010-project-table" author="prs">
+    <createTable tableName="project" schemaName="prs">
+      <column name="id" type="BIGINT"><constraints primaryKey="true"/></column>
+      <column name="tenant_id" type="BIGINT"><constraints nullable="false"/></column>
+      <column name="code" type="VARCHAR(64)"/>
+      <column name="name" type="VARCHAR(128)"><constraints nullable="false"/></column>
+      <column name="abbreviation" type="VARCHAR(128)"/>
+      <column name="status" type="VARCHAR(16)"/>
+      <column name="type" type="VARCHAR(16)"/>
+      <column name="customer_type" type="VARCHAR(32)"/>
+      <column name="contract_id" type="BIGINT"/>
+      <column name="manager_id" type="VARCHAR(64)"/>
+      <column name="start_time" type="TIMESTAMPTZ"/>
+      <column name="end_time" type="TIMESTAMPTZ"/>
+      <column name="del_flag" type="VARCHAR(1)" defaultValue="0"/>
+      <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="now()"/>
+      <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="now()"/>
+      <column name="synced_at" type="TIMESTAMPTZ"/>
+    </createTable>
+    <createIndex tableName="project" schemaName="prs" indexName="idx_project_tenant">
+      <column name="tenant_id"/>
+      <column name="status"/>
+      <column name="type"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="011-project-rls" author="prs" runInTransaction="false">
+    <sql>ALTER TABLE prs.project ENABLE ROW LEVEL SECURITY</sql>
+    <sql>ALTER TABLE prs.project FORCE ROW LEVEL SECURITY</sql>
+    <sql>CREATE POLICY project_tenant_isolation ON prs.project
+      USING (tenant_id = current_setting('app.tenant_id', true)::bigint)</sql>
+  </changeSet>
+
+  <changeSet id="012-project-seed" author="prs">
+    <insert tableName="project" schemaName="prs">
+      <column name="id" valueNumeric="9001"/>
+      <column name="tenant_id" valueNumeric="1"/>
+      <column name="code" value="P-T1-001"/>
+      <column name="name" value="租户一种子项目"/>
+      <column name="status" value="1"/>
+      <column name="type" value="1"/>
+      <column name="del_flag" value="0"/>
+    </insert>
+    <insert tableName="project" schemaName="prs">
+      <column name="id" valueNumeric="9002"/>
+      <column name="tenant_id" valueNumeric="2"/>
+      <column name="code" value="P-T2-001"/>
+      <column name="name" value="租户二种子项目"/>
+      <column name="status" value="1"/>
+      <column name="type" value="1"/>
+      <column name="del_flag" value="0"/>
+    </insert>
+  </changeSet>
+  <changeSet id="013-project-rls-write" author="prs">
+    <comment>RLS 写路径：INSERT/UPDATE 需 WITH CHECK（USING 只覆盖读）</comment>
+    <sql>DROP POLICY IF EXISTS project_tenant_isolation ON prs.project</sql>
+    <sql>CREATE POLICY project_tenant_isolation ON prs.project
+      USING (tenant_id = current_setting('app.tenant_id', true)::bigint)
+      WITH CHECK (tenant_id = current_setting('app.tenant_id', true)::bigint)</sql>
+  </changeSet>
+</databaseChangeLog>
