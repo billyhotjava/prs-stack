@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-prs_dir="$(cd "$(dirname "$0")/.." && pwd)"
-if [[ $# -ne 1 ]]; then
-  echo 'Usage: STUDIO_PACK_CLI=/build/dts-studio/engine/tools/pack-cli build-studio-pack /new/output.dtspack' >&2
-  exit 2
-fi
-: "${STUDIO_PACK_CLI:?Set STUDIO_PACK_CLI to the built Studio validator wrapper}"
-"$STUDIO_PACK_CLI" validate "$prs_dir/pack/studio" --strict
-exec "$STUDIO_PACK_CLI" build "$prs_dir/pack/studio" -o "$1" --strict
+prs_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ $# -ne 1 ]]; then echo 'Usage: DTS_PACK_CLI=/path/to/pack-cli build-studio-pack /new/output.dtspack' >&2; exit 2; fi
+pack_cli="${DTS_PACK_CLI:-${STUDIO_PACK_CLI:-dts-pack-cli}}"
+if ! command -v "$pack_cli" >/dev/null 2>&1; then echo 'Set DTS_PACK_CLI to the installed dts-common Pack CLI.' >&2; exit 1; fi
+"$pack_cli" validate "$prs_dir/pack/studio" --strict
+exec "$pack_cli" build "$prs_dir/pack/studio" -o "$1" --strict

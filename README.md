@@ -29,3 +29,15 @@ deployed industry pack for plant-rental operations.
 - `make frontend-build`: build the remote frontend
 - `make pack-validate`: validate pack structure
 - `make smoke-local`: run local smoke checks
+
+## Shared contracts and module independence
+
+`sources/prs-common` contains PRS-specific framework configuration. It remains
+inside PRS; sharing Spring/JPA configuration across all DTS products would couple
+their runtimes. Shared Pack wire formats and offline tooling live in the versioned
+`dts-common-pack` release. PRS produces its industry assets locally and invokes
+that tool through `DTS_PACK_CLI`; no Studio implementation dependency is required.
+
+```bash
+DTS_PACK_CLI=/path/to/installed/pack-cli ./tools/build-studio-pack /tmp/new-prs.dtspack
+```

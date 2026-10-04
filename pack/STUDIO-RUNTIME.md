@@ -7,7 +7,7 @@ and evaluation documents, one response catalog, four prompts, and one collection
 changesets, including runtime/dataset fixes 031 and 032.
 
 ```bash
-STUDIO_PACK_CLI=/data/dts-studio/engine/tools/pack-cli \
+DTS_PACK_CLI=/path/to/installed/dts-common/tools/pack-cli \
   ./tools/build-studio-pack /new/path/prs-flower-0.1.2.dtspack
 ```
 
@@ -35,3 +35,7 @@ Fresh bootstrap uses Studio's `studio-pack` profile and requires the implementat
 the `v1.1.0-004-template-match-order` migration. Use 0.1.2 for this lane; 0.1.1 is retained as
 the historical runtime checkpoint. These source versions are development checkpoints, not
 production image/release acceptance.
+
+The Pack CLI is the versioned Common release artifact. It does not require a running
+Studio process or a Studio source checkout. `STUDIO_PACK_CLI` remains a compatibility
+alias; new producers should set `DTS_PACK_CLI`.
